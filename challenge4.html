@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenge 04 - Base64 Layers | Try-Pwn-Me</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            padding: 40px 20px;
+            border-bottom: 1px solid #2a2a2a;
+            margin-bottom: 40px;
+        }
+
+        .back-link {
+            color: #888;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #ffffff;
+        }
+
+        .challenge-number {
+            font-size: 0.8em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+        }
+
+        .challenge-difficulty {
+            display: inline-block;
+            padding: 6px 16px;
+            background: #1a1a1a;
+            border: 1px solid #555;
+            margin-bottom: 20px;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .challenge-meta {
+            color: #666;
+            font-size: 0.9em;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .section {
+            background: #141414;
+            border: 1px solid #2a2a2a;
+            padding: 35px;
+            margin-bottom: 30px;
+        }
+
+        .section h2 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .section p {
+            color: #aaa;
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+
+        .hint-box {
+            background: #1a1a1a;
+            border-left: 3px solid #444;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .hint-box strong {
+            color: #fff;
+        }
+
+        .objective-box {
+            background: #0f0f0f;
+            border: 1px solid #2a2a2a;
+            padding: 25px;
+            margin: 20px 0;
+        }
+
+        .objective-box h3 {
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .download-section {
+            background: #0a0a0a;
+            border: 2px solid #2a2a2a;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .download-btn {
+            background: #ffffff;
+            color: #000000;
+            border: none;
+            padding: 15px 40px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+        }
+
+        .download-btn:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        .flag-submission {
+            background: #0a0a0a;
+            border: 1px solid #2a2a2a;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .flag-input {
+            width: 100%;
+            padding: 15px;
+            background: #141414;
+            border: 1px solid #2a2a2a;
+            color: #ffffff;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            margin-bottom: 20px;
+            transition: border-color 0.3s ease;
+        }
+
+        .flag-input:focus {
+            outline: none;
+            border-color: #555;
+        }
+
+        .btn {
+            background: #ffffff;
+            color: #000000;
+            border: none;
+            padding: 15px 40px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        .message {
+            padding: 25px;
+            margin: 20px 0;
+            border: 1px solid #2a2a2a;
+            display: none;
+        }
+
+        .message.success {
+            background: #0a1a0a;
+            border-color: #224422;
+            color: #44ff44;
+            display: block;
+        }
+
+        .message.error {
+            background: #1a0a0a;
+            border-color: #442222;
+            color: #ff4444;
+            display: block;
+        }
+
+        .message h3 {
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        code {
+            background: #1a1a1a;
+            padding: 2px 8px;
+            font-family: 'Courier New', monospace;
+            color: #ddd;
+        }
+
+        .code-block {
+            background: #0a0a0a;
+            border: 1px solid #2a2a2a;
+            padding: 20px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        .tools-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .tools-list li {
+            padding: 10px 0;
+            color: #aaa;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .tools-list li:last-child {
+            border-bottom: none;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+            border-top: 1px solid #2a2a2a;
+            margin-top: 60px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="index.html" class="back-link">← Retour aux challenges</a>
+            <div class="challenge-number">Challenge 04</div>
+            <h1>Base64 Multi-Layers</h1>
+            <span class="challenge-difficulty">Moyen</span>
+            <div class="challenge-meta">
+                <span>🔐 Crypto</span>
+                <span>🎯 100 points</span>
+                <span>🔧 Encodage</span>
+            </div>
+        </header>
+
+        <div class="section">
+            <h2>Description</h2>
+            <p>
+                Base64 est un système d'encodage qui permet de représenter des données binaires 
+                sous forme de texte ASCII. Il est largement utilisé pour transmettre des données 
+                sur des protocoles qui ne supportent que du texte.
+            </p>
+            <p>
+                Dans ce challenge, le message a été encodé plusieurs fois successivement. 
+                Vous devrez décoder chaque couche pour révéler le flag final.
+            </p>
+            
+            <div class="hint-box">
+                <strong>💡 Indice :</strong> Le message a été encodé 5 fois avec Base64. 
+                Vous devez le décoder 5 fois de suite pour obtenir le flag. Automatisez 
+                le processus avec un script !
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Objectif</h2>
+            <div class="objective-box">
+                <h3>🎯 Mission</h3>
+                <p>Téléchargez le fichier encodé, décodez-le couche par couche et trouvez le flag.</p>
+            </div>
+        </div>
+
+        <div class="download-section">
+            <h2 style="margin-bottom: 25px;">📥 Télécharger le Fichier</h2>
+            <p style="margin-bottom: 20px; color: #aaa;">
+                Le fichier contient un message encodé 5 fois en Base64
+            </p>
+            <a href="ctf-files/crypto_base64.zip" class="download-btn" download>
+                📦 Télécharger multilayer_encoded.txt
+            </a>
+        </div>
+
+        <div class="flag-submission">
+            <h2 style="margin-bottom: 25px;">Soumettre le Flag</h2>
+            <input 
+                type="text" 
+                id="flag-input" 
+                class="flag-input" 
+                placeholder="TPM{...}"
+                autocomplete="off"
+            >
+            <button class="btn" onclick="checkFlag()">Valider le Flag</button>
+        </div>
+
+        <div id="flag-message" class="message"></div>
+
+        <div class="section">
+            <h2>Outils Recommandés</h2>
+            <ul class="tools-list">
+                <li><strong>En ligne :</strong> CyberChef (gchq.github.io/CyberChef) - Opération "From Base64" en boucle</li>
+                <li><strong>Python :</strong> Module base64</li>
+                <li><strong>Ligne de commande :</strong> base64 -d (Linux/Mac)</li>
+                <li><strong>JavaScript :</strong> atob() function</li>
+            </ul>
+        </div>
+
+        <div id="solution-section" class="section" style="display: none;">
+            <h2>✅ Solution et Explications</h2>
+            
+            <h3 style="margin: 20px 0 10px 0; font-size: 1.1em;">Méthode 1 : CyberChef (recommandé)</h3>
+            <p>1. Allez sur <code>gchq.github.io/CyberChef</code></p>
+            <p>2. Ajoutez l'opération "From Base64" 5 fois dans la recette</p>
+            <p>3. Collez le contenu du fichier dans l'input</p>
+            <p>4. Le flag apparaît après les 5 décodages</p>
+            
+            <h3 style="margin: 20px 0 10px 0; font-size: 1.1em;">Méthode 2 : Python</h3>
+            <div class="code-block">
+import base64
+
+with open('multilayer_encoded.txt', 'r') as f:
+    content = f.read().split('\n')
+    # Prendre la ligne du message encodé
+    encoded = content[-1]
+
+# Décoder 5 fois
+decoded = encoded
+for i in range(5):
+    decoded = base64.b64decode(decoded).decode()
+    print(f"Layer {i+1}: {decoded}")
+            </div>
+            
+            <h3 style="margin: 20px 0 10px 0; font-size: 1.1em;">Méthode 3 : Ligne de commande</h3>
+            <div class="code-block">
+# Extraire le message et décoder 5 fois
+tail -n 1 multilayer_encoded.txt | base64 -d | base64 -d | base64 -d | base64 -d | base64 -d
+            </div>
+            
+            <h3 style="margin: 20px 0 10px 0; font-size: 1.1em;">Comprendre Base64</h3>
+            <p><strong>Base64 n'est PAS du chiffrement !</strong></p>
+            <p>Base64 est un encodage, pas un chiffrement. Il ne fournit aucune sécurité :</p>
+            <ul class="tools-list">
+                <li><strong>Encodage :</strong> Transformation réversible sans clé</li>
+                <li><strong>Chiffrement :</strong> Transformation nécessitant une clé secrète</li>
+                <li><strong>Usage :</strong> Transmission de données binaires en texte ASCII</li>
+                <li><strong>Reconnaissance :</strong> Se termine souvent par '=' (padding)</li>
+            </ul>
+            <p style="margin-top: 15px;">
+                Multiplier les couches d'encodage ne rend pas les données plus sécurisées, 
+                juste plus difficiles à lire rapidement.
+            </p>
+        </div>
+
+        <footer>
+            <p>Try-Pwn-Me - Challenge 04</p>
+        </footer>
+    </div>
+
+    <script>
+        function checkFlag() {
+            const flagInput = document.getElementById('flag-input').value.trim();
+            const messageDiv = document.getElementById('flag-message');
+            const correctFlag = 'TPM{b4s364_1s_n0t_3ncryp7i0n}';
+            
+            if (flagInput === '') {
+                messageDiv.className = 'message error';
+                messageDiv.innerHTML = `
+                    <h3>❌ Erreur</h3>
+                    <p>Veuillez entrer un flag avant de valider.</p>
+                `;
+                return;
+            }
+            
+            if (flagInput === correctFlag) {
+                messageDiv.className = 'message success';
+                messageDiv.innerHTML = `
+                    <h3>🎉 CHALLENGE RÉUSSI !</h3>
+                    <p>Excellent travail ! Vous avez décodé toutes les couches de Base64.</p>
+                    <p style="margin-top: 15px; font-family: 'Courier New', monospace; font-size: 1.1em;">
+                        FLAG VALIDÉ: ${correctFlag}
+                    </p>
+                    <p style="margin-top: 20px; font-size: 0.95em; color: #888;">
+                        ⚠️ Leçon importante : Base64 n'est PAS un chiffrement ! C'est un simple 
+                        encodage qui peut être décodé instantanément sans clé. Ne l'utilisez JAMAIS 
+                        pour protéger des données sensibles. Les développeurs qui pensent "sécuriser" 
+                        leurs données avec Base64 commettent une erreur grave.
+                    </p>
+                `;
+                
+                // Afficher la section solution
+                document.getElementById('solution-section').style.display = 'block';
+                document.getElementById('solution-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                messageDiv.className = 'message error';
+                messageDiv.innerHTML = `
+                    <h3>❌ Flag Incorrect</h3>
+                    <p>Le flag que vous avez entré n'est pas correct. Continuez à chercher !</p>
+                    <p style="margin-top: 15px; color: #888;">
+                        💡 Astuce : Assurez-vous de décoder exactement 5 fois. Utilisez CyberChef 
+                        ou un script Python pour automatiser le processus.
+                    </p>
+                `;
+            }
+        }
+
+        document.getElementById('flag-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkFlag();
+            }
+        });
+
+        console.log('%c[Try-Pwn-Me] Challenge 04 - Base64 Layers', 'color: white; font-size: 16px; font-weight: bold;');
+        console.log('%c5 couches d\'encodage à décoder', 'color: #888; font-size: 12px;');
+    </script>
+</body>
+</html>

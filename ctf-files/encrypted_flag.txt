@@ -1,0 +1,9 @@
+=== RSA ENCRYPTED MESSAGE ===
+
+Le flag a été chiffré avec RSA.
+Cependant, le module n est suspect...
+
+Ciphertext (c) : 2475953962
+
+Indice : Essayez de factoriser n. Il pourrait être plus petit qu'il n'y paraît.
+Outils recommandés : factordb.com, yafu, msieve

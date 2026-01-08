@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenge 08 - SQL Injection | Try-Pwn-Me</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a; color: #ffffff; min-height: 100vh; line-height: 1.6;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        header { padding: 40px 20px; border-bottom: 1px solid #2a2a2a; margin-bottom: 40px; }
+        .back-link { color: #888; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px; transition: color 0.3s; }
+        .back-link:hover { color: #ffffff; }
+        .challenge-number { font-size: 0.8em; color: #666; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; }
+        h1 { font-size: 2.5em; font-weight: 700; margin-bottom: 15px; letter-spacing: -1px; }
+        .challenge-difficulty { display: inline-block; padding: 6px 16px; background: #1a1a1a; border: 1px solid #555; margin-bottom: 20px; font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px; }
+        .challenge-meta { color: #666; font-size: 0.9em; display: flex; gap: 20px; flex-wrap: wrap; }
+        .section { background: #141414; border: 1px solid #2a2a2a; padding: 35px; margin-bottom: 30px; }
+        .section h2 { font-size: 1.5em; margin-bottom: 20px; font-weight: 600; }
+        .section p { color: #aaa; margin-bottom: 15px; line-height: 1.8; }
+        .hint-box { background: #1a1a1a; border-left: 3px solid #444; padding: 20px; margin: 20px 0; }
+        .hint-box strong { color: #fff; }
+        .objective-box { background: #0f0f0f; border: 1px solid #2a2a2a; padding: 25px; margin: 20px 0; }
+        .login-simulator { background: #0a0a0a; border: 2px solid #2a2a2a; padding: 40px; margin: 30px 0; }
+        .login-form { max-width: 400px; margin: 0 auto; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; color: #888; font-size: 0.9em; }
+        .form-input { width: 100%; padding: 12px; background: #141414; border: 1px solid #2a2a2a; color: #ffffff; font-family: 'Courier New', monospace; font-size: 1em; }
+        .form-input:focus { outline: none; border-color: #555; }
+        .btn { background: #ffffff; color: #000000; border: none; padding: 12px 30px; cursor: pointer; font-family: inherit; font-size: 1em; font-weight: 500; transition: all 0.3s; text-transform: uppercase; letter-spacing: 1px; width: 100%; }
+        .btn:hover { background: #e0e0e0; transform: translateY(-2px); }
+        .login-result { margin-top: 20px; padding: 15px; border: 1px solid #2a2a2a; display: none; }
+        .login-result.success { background: #0a1a0a; border-color: #224422; color: #44ff44; }
+        .login-result.error { background: #1a0a0a; border-color: #442222; color: #ff4444; }
+        .flag-submission { background: #0a0a0a; border: 1px solid #2a2a2a; padding: 30px; margin: 30px 0; }
+        .flag-input { width: 100%; padding: 15px; background: #141414; border: 1px solid #2a2a2a; color: #ffffff; font-family: 'Courier New', monospace; font-size: 1em; margin-bottom: 20px; }
+        .message { padding: 25px; margin: 20px 0; border: 1px solid #2a2a2a; display: none; }
+        .message.success { background: #0a1a0a; border-color: #224422; color: #44ff44; display: block; }
+        .message.error { background: #1a0a0a; border-color: #442222; color: #ff4444; display: block; }
+        code { background: #1a1a1a; padding: 2px 8px; font-family: 'Courier New', monospace; color: #ddd; }
+        .code-block { background: #0a0a0a; border: 1px solid #2a2a2a; padding: 20px; margin: 15px 0; font-family: 'Courier New', monospace; overflow-x: auto; font-size: 0.9em; }
+        .tools-list { list-style: none; padding: 0; }
+        .tools-list li { padding: 10px 0; color: #aaa; border-bottom: 1px solid #1a1a1a; }
+        .tools-list li:last-child { border-bottom: none; }
+        footer { text-align: center; padding: 40px 20px; color: #666; border-top: 1px solid #2a2a2a; margin-top: 60px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="index.html" class="back-link">← Retour aux challenges</a>
+            <div class="challenge-number">Challenge 08</div>
+            <h1>SQL Injection - Login Bypass</h1>
+            <span class="challenge-difficulty">Moyen</span>
+            <div class="challenge-meta">
+                <span>🌐 Web</span>
+                <span>🎯 100 points</span>
+                <span>🔧 SQL Injection</span>
+            </div>
+        </header>
+
+        <div class="section">
+            <h2>Description</h2>
+            <p>
+                L'injection SQL est une des vulnérabilités web les plus critiques (OWASP Top 10). 
+                Elle permet à un attaquant d'injecter du code SQL malveillant dans une requête, 
+                pouvant ainsi contourner l'authentification, extraire des données ou modifier la base.
+            </p>
+            <p>
+                Dans ce challenge, vous devez contourner le système d'authentification en exploitant 
+                une injection SQL dans le formulaire de connexion.
+            </p>
+            
+            <div class="hint-box">
+                <strong>💡 Indice :</strong> La requête SQL ressemble à : 
+                <code>SELECT * FROM users WHERE username='...' AND password='...'</code>
+                <br><br>
+                Que se passe-t-il si vous injectez <code>' OR '1'='1</code> dans le username ?
+                Essayez aussi des variantes comme <code>admin'--</code> ou <code>' OR 1=1--</code>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Objectif</h2>
+            <div class="objective-box">
+                <h3>🎯 Mission</h3>
+                <p>Contournez l'authentification SQL pour vous connecter en tant qu'administrateur.</p>
+            </div>
+        </div>
+
+        <div class="login-simulator">
+            <h2 style="text-align: center; margin-bottom: 30px;">🔐 Système de Connexion</h2>
+            <div class="login-form">
+                <div class="form-group">
+                    <label for="username">Nom d'utilisateur</label>
+                    <input type="text" id="username" class="form-input" placeholder="admin" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" id="password" class="form-input" placeholder="••••••••">
+                </div>
+                <button class="btn" onclick="attemptLogin()">Se Connecter</button>
+                <div id="login-result" class="login-result"></div>
+            </div>
+        </div>
+
+        <div class="flag-submission">
+            <h2 style="margin-bottom: 25px;">Soumettre le Flag</h2>
+            <input type="text" id="flag-input" class="flag-input" placeholder="TPM{...}" autocomplete="off">
+            <button class="btn" onclick="checkFlag()">Valider le Flag</button>
+        </div>
+
+        <div id="flag-message" class="message"></div>
+
+        <div id="solution-section" class="section" style="display: none;">
+            <h2>✅ Solution et Explications</h2>
+            
+            <h3 style="margin: 20px 0 10px 0; font-size: 1.1em;">Comprendre SQL Injection</h3>
+            <p><strong>Requête vulnérable (pseudo-code) :</strong></p>
+            <div class="code-block">
+query = "SELECT * FROM users WHERE username='" + username + "' AND password='" + password + "'"
+            </div>
+            
+            <p style="margin-top: 15px;"><strong>Exploitation :</strong></p>
+            <div class="code-block">
+# Input : username = admin'--
+# Requête devient :
+SELECT * FROM users WHERE username='admin'--' AND password='...'
+
+# Le -- commente le reste de la requête
+# On se connecte comme admin sans mot de passe !
+            </div>
+            
+            <h3 style="margin: 20px 0 10px 0; font-size: 1.1em;">Payloads SQL Injection</h3>
+            <ul class="tools-list">
+                <li><code>' OR '1'='1</code> - Condition toujours vraie</li>
+                <li><code>' OR 1=1--</code> - Condition vraie + commentaire</li>
+                <li><code>admin'--</code> - Username admin + commentaire</li>
+                <li><code>' OR 'a'='a</code> - Variante condition vraie</li>
+                <li><code>' UNION SELECT NULL--</code> - UNION injection</li>
+                <li><code>'; DROP TABLE users--</code> - Destruction (Bobby Tables)</li>
+            </ul>
+            
+            <h3 style="margin: 20px 0 10px 0; font-size: 1.1em;">Prévention</h3>
+            <p><strong>Solutions sécurisées :</strong></p>
+            <ul class="tools-list">
+                <li><strong>Requêtes préparées :</strong> Utiliser des paramètres bindés</li>
+                <li><strong>ORM :</strong> Utiliser des frameworks comme SQLAlchemy, Django ORM</li>
+                <li><strong>Validation :</strong> Valider et filtrer tous les inputs</li>
+                <li><strong>Principe du moindre privilège :</strong> Limiter les permissions DB</li>
+                <li><strong>WAF :</strong> Web Application Firewall pour détecter les injections</li>
+            </ul>
+            
+            <h3 style="margin: 20px 0 10px 0; font-size: 1.1em;">Exemple sécurisé (Python) :</h3>
+            <div class="code-block">
+# MAUVAIS - Vulnérable
+query = f"SELECT * FROM users WHERE username='{username}'"
+
+# BON - Sécurisé avec paramètres
+cursor.execute(
+    "SELECT * FROM users WHERE username=? AND password=?",
+    (username, password)
+)
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Outils et Ressources</h2>
+            <ul class="tools-list">
+                <li><strong>SQLMap :</strong> Outil automatisé pour détecter et exploiter les SQLi</li>
+                <li><strong>Burp Suite :</strong> Intercepter et modifier les requêtes</li>
+                <li><strong>OWASP ZAP :</strong> Scanner de vulnérabilités web</li>
+                <li><strong>PortSwigger Academy :</strong> Excellent tutoriel SQL injection</li>
+            </ul>
+        </div>
+
+        <footer>
+            <p>Try-Pwn-Me - Challenge 08</p>
+        </footer>
+    </div>
+
+    <script>
+        const validPayloads = [
+            "' OR '1'='1",
+            "' OR 1=1--",
+            "admin'--",
+            "' OR 'a'='a",
+            "' or 1=1--",
+            "admin' --",
+            "' OR '1'='1'--",
+            "' OR 1=1#",
+            "admin'#"
+        ];
+
+        function attemptLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const resultDiv = document.getElementById('login-result');
+            
+            // Simuler la requête SQL vulnérable
+            const query = `SELECT * FROM users WHERE username='${username}' AND password='${password}'`;
+            
+            // Vérifier si l'injection fonctionne
+            let isInjected = false;
+            for (let payload of validPayloads) {
+                if (username.includes(payload) || password.includes(payload)) {
+                    isInjected = true;
+                    break;
+                }
+            }
+            
+            resultDiv.style.display = 'block';
+            
+            if (isInjected) {
+                resultDiv.className = 'login-result success';
+                resultDiv.innerHTML = `
+                    <h3>✅ Connexion Réussie !</h3>
+                    <p>Bienvenue, Administrateur !</p>
+                    <p style="margin-top: 10px; font-family: 'Courier New', monospace; color: #44ff44;">
+                        FLAG: TPM{sql_1nj3ct10n_byp4ss_succ3ss}
+                    </p>
+                    <p style="margin-top: 10px; font-size: 0.85em; color: #888;">
+                        Requête exécutée : <br>
+                        <code>${query}</code>
+                    </p>
+                `;
+            } else if (username === 'admin' && password === 'admin123') {
+                resultDiv.className = 'login-result success';
+                resultDiv.innerHTML = `
+                    <h3>✅ Connexion normale réussie</h3>
+                    <p>Mais ce n'est pas le but du challenge ! Utilisez une injection SQL.</p>
+                `;
+            } else {
+                resultDiv.className = 'login-result error';
+                resultDiv.innerHTML = `
+                    <h3>❌ Échec de connexion</h3>
+                    <p>Identifiants incorrects. Essayez une injection SQL !</p>
+                    <p style="margin-top: 10px; font-size: 0.85em;">
+                        Requête : <code>${query}</code>
+                    </p>
+                `;
+            }
+        }
+
+        function checkFlag() {
+            const flagInput = document.getElementById('flag-input').value.trim();
+            const messageDiv = document.getElementById('flag-message');
+            const correctFlag = 'TPM{sql_1nj3ct10n_byp4ss_succ3ss}';
+            
+            if (flagInput === '') {
+                messageDiv.className = 'message error';
+                messageDiv.innerHTML = '<h3>❌ Erreur</h3><p>Veuillez entrer un flag.</p>';
+                return;
+            }
+            
+            if (flagInput === correctFlag) {
+                messageDiv.className = 'message success';
+                messageDiv.innerHTML = `
+                    <h3>🎉 CHALLENGE RÉUSSI !</h3>
+                    <p>Excellent ! Vous avez contourné l'authentification SQL.</p>
+                    <p style="margin-top: 15px; font-family: 'Courier New', monospace; font-size: 1.1em;">
+                        FLAG VALIDÉ: ${correctFlag}
+                    </p>
+                    <p style="margin-top: 20px; font-size: 0.95em; color: #888;">
+                        ⚠️ Leçon importante : TOUJOURS utiliser des requêtes préparées avec paramètres 
+                        bindés. Ne JAMAIS concaténer des inputs utilisateurs directement dans une requête SQL. 
+                        L'injection SQL peut mener au vol de données, destruction de DB, ou prise de contrôle du serveur.
+                    </p>
+                `;
+                
+                // Afficher la section solution
+                document.getElementById('solution-section').style.display = 'block';
+                document.getElementById('solution-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                messageDiv.className = 'message error';
+                messageDiv.innerHTML = `
+                    <h3>❌ Flag Incorrect</h3>
+                    <p>Continuez à chercher ! Testez différents payloads SQL.</p>
+                `;
+            }
+        }
+
+        document.getElementById('username').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') attemptLogin();
+        });
+        
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') attemptLogin();
+        });
+        
+        document.getElementById('flag-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') checkFlag();
+        });
+
+        console.log('%c[Try-Pwn-Me] Challenge 08 - SQL Injection', 'color: white; font-size: 16px; font-weight: bold;');
+        console.log('%cEssayez des payloads comme: \' OR 1=1--', 'color: #888; font-size: 12px;');
+    </script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+=== SOLUTION (NE PAS REGARDER AVANT D'AVOIR ESSAYÉ) ===
+
+p = 96041
+q = 104729
+n = 10058277889
+phi = 10058077120
+d (exposant privé) = 6754291073
+
+Message déchiffré : TPM{w34k_rsa_k3y_1s_br0k3n}

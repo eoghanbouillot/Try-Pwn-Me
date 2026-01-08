@@ -1,0 +1,13 @@
+=== MULTI-LAYER BASE64 CHALLENGE ===
+
+Ce message a été encodé plusieurs fois avec Base64.
+Décodez-le couche par couche pour révéler le flag.
+
+Indice : Le nombre de couches d'encodage est 5.
+
+Message encodé :
+Vm0xMFlWRXhVblJXV0d4VVZrVktjVnBYYzNkbFZsSnlWMVJTYkZJd01UUlVNV2hYVkd4T1IxTnRNVlZXUld0NFdWY3hUMlJYU2tsYVJUbE9ZbGhSZWxkWE1EQmtNVUpTVUZRd1BRPT0=
+
+---
+Utilisez la commande : base64 -d
+Ou un outil en ligne comme CyberChef

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenge 01 - User-Agent | Try-Pwn-Me</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            padding: 40px 20px;
+            border-bottom: 1px solid #2a2a2a;
+            margin-bottom: 40px;
+        }
+
+        .back-link {
+            color: #888;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #ffffff;
+        }
+
+        .challenge-number {
+            font-size: 0.8em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+        }
+
+        .challenge-difficulty {
+            display: inline-block;
+            padding: 6px 16px;
+            background: #1a1a1a;
+            border: 1px solid #4a4a4a;
+            margin-bottom: 20px;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .challenge-meta {
+            color: #666;
+            font-size: 0.9em;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .section {
+            background: #141414;
+            border: 1px solid #2a2a2a;
+            padding: 35px;
+            margin-bottom: 30px;
+        }
+
+        .section h2 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .section p {
+            color: #aaa;
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+
+        .hint-box {
+            background: #1a1a1a;
+            border-left: 3px solid #444;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .hint-box strong {
+            color: #fff;
+        }
+
+        .objective-box {
+            background: #0f0f0f;
+            border: 1px solid #2a2a2a;
+            padding: 25px;
+            margin: 20px 0;
+        }
+
+        .objective-box h3 {
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .tools-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .tools-list li {
+            padding: 10px 0;
+            color: #aaa;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .tools-list li:last-child {
+            border-bottom: none;
+        }
+
+        .access-zone {
+            background: #0a0a0a;
+            border: 1px solid #2a2a2a;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .access-status {
+            font-size: 1.2em;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #141414;
+            border: 1px solid #2a2a2a;
+        }
+
+        .access-status.denied {
+            color: #ff4444;
+            border-color: #442222;
+        }
+
+        .access-status.granted {
+            color: #44ff44;
+            border-color: #224422;
+        }
+
+        .btn {
+            background: #ffffff;
+            color: #000000;
+            border: none;
+            padding: 15px 40px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        .message {
+            padding: 25px;
+            margin: 20px 0;
+            border: 1px solid #2a2a2a;
+            display: none;
+        }
+
+        .message.success {
+            background: #0a1a0a;
+            border-color: #224422;
+            color: #44ff44;
+            display: block;
+        }
+
+        .message.error {
+            background: #1a0a0a;
+            border-color: #442222;
+            color: #ff4444;
+            display: block;
+        }
+
+        .message h3 {
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .flag-display {
+            background: #000000;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            border: 1px solid #2a2a2a;
+        }
+
+        code {
+            background: #1a1a1a;
+            padding: 2px 8px;
+            font-family: 'Courier New', monospace;
+            color: #ddd;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+            border-top: 1px solid #2a2a2a;
+            margin-top: 60px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="index.html" class="back-link">← Retour aux challenges</a>
+            <div class="challenge-number">Challenge 01</div>
+            <h1>User-Agent Challenge</h1>
+            <span class="challenge-difficulty">Facile</span>
+            <div class="challenge-meta">
+                <span>📁 Web</span>
+                <span>🎯 50 points</span>
+                <span>🔧 HTTP Headers</span>
+            </div>
+        </header>
+
+        <div class="section">
+            <h2>Description</h2>
+            <p>
+                Vous devez accéder à une ressource protégée qui n'est accessible 
+                qu'aux administrateurs du système. Le serveur vérifie votre identité 
+                via le header HTTP User-Agent.
+            </p>
+            <p>
+                Le User-Agent est une chaîne de caractères envoyée par votre navigateur 
+                qui identifie votre système d'exploitation, votre navigateur et sa version. 
+                Cette vérification côté client peut être facilement contournée.
+            </p>
+            
+            <div class="hint-box">
+                <strong>💡 Indice :</strong> Les navigateurs envoient des informations 
+                sur eux-mêmes via le header "User-Agent". Que se passerait-il si vous 
+                modifiiez cette valeur pour vous faire passer pour quelqu'un d'autre ?
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Objectif</h2>
+            <div class="objective-box">
+                <h3>🎯 Mission</h3>
+                <p>Modifiez votre User-Agent pour qu'il contienne le mot "admin" et accédez au flag.</p>
+            </div>
+        </div>
+
+        <div class="access-zone">
+            <h2 style="margin-bottom: 25px;">Zone d'Accès Protégée</h2>
+            <div id="ua-status" class="access-status denied">
+                ❌ Accès refusé - User-Agent non autorisé
+            </div>
+            <button class="btn" onclick="checkUserAgent()">Vérifier l'accès</button>
+        </div>
+
+        <div id="ua-message" class="message"></div>
+
+        <div class="section">
+            <h2>Outils Recommandés</h2>
+            <ul class="tools-list">
+                <li><strong>Extensions navigateur :</strong> User-Agent Switcher and Manager (Chrome/Firefox)</li>
+                <li><strong>Outils développeur :</strong> F12 → Network → Modifier les headers de requête</li>
+                <li><strong>Ligne de commande :</strong> curl avec option -A ou --user-agent</li>
+                <li><strong>Proxy :</strong> Burp Suite, OWASP ZAP pour intercepter et modifier les requêtes</li>
+            </ul>
+        </div>
+
+        <div id="solution-section" class="section" style="display: none;">
+            <h2>✅ Solution et Explications</h2>
+            <p>Voici quelques méthodes pour modifier votre User-Agent :</p>
+            
+            <h3 style="margin: 20px 0 10px 0; font-size: 1.1em;">Méthode 1 : Extension navigateur</h3>
+            <p>1. Installez "User-Agent Switcher and Manager"</p>
+            <p>2. Créez un User-Agent personnalisé contenant "admin"</p>
+            <p>3. Rechargez la page et vérifiez l'accès</p>
+            
+            <h3 style="margin: 20px 0 10px 0; font-size: 1.1em;">Méthode 2 : Ligne de commande (curl)</h3>
+            <code style="display: block; padding: 15px; margin: 10px 0;">
+                curl -A "admin" https://exemple.com/challenge1.html
+            </code>
+            
+            <h3 style="margin: 20px 0 10px 0; font-size: 1.1em;">Méthode 3 : Outils développeur</h3>
+            <p>1. Ouvrez les outils développeur (F12)</p>
+            <p>2. Allez dans l'onglet Network</p>
+            <p>3. Utilisez l'option pour modifier les headers</p>
+        </div>
+
+        <footer>
+            <p>Try-Pwn-Me - Challenge 01</p>
+        </footer>
+    </div>
+
+    <script>
+        function checkUserAgent() {
+            const userAgent = navigator.userAgent.toLowerCase();
+            const statusDiv = document.getElementById('ua-status');
+            const messageDiv = document.getElementById('ua-message');
+            
+            if (userAgent.includes('admin')) {
+                statusDiv.innerHTML = '✅ Accès autorisé - Bienvenue administrateur !';
+                statusDiv.className = 'access-status granted';
+                
+                messageDiv.className = 'message success';
+                messageDiv.innerHTML = `
+                    <h3>🎉 CHALLENGE RÉUSSI !</h3>
+                    <p>Félicitations ! Vous avez réussi à modifier votre User-Agent pour contourner la vérification.</p>
+                    <div class="flag-display">
+                        FLAG: TPM{us3r_ag3nt_m4st3r_2024}
+                    </div>
+                    <p style="margin-top: 20px; font-size: 0.95em; color: #888;">
+                        ⚠️ Note de sécurité : Ce type de vérification côté client n'est pas sécurisé 
+                        en environnement de production. Les vérifications d'authentification doivent 
+                        toujours être effectuées côté serveur.
+                    </p>
+                `;
+                
+                // Afficher la section solution
+                document.getElementById('solution-section').style.display = 'block';
+                document.getElementById('solution-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                statusDiv.innerHTML = '❌ Accès refusé - User-Agent non autorisé';
+                statusDiv.className = 'access-status denied';
+                
+                messageDiv.className = 'message error';
+                messageDiv.innerHTML = `
+                    <h3>❌ Accès Refusé</h3>
+                    <p>Votre User-Agent actuel ne contient pas le mot requis.</p>
+                    <p style="margin-top: 15px;"><strong>User-Agent détecté :</strong></p>
+                    <code style="display: block; padding: 15px; margin: 10px 0; word-break: break-all;">
+                        ${navigator.userAgent}
+                    </code>
+                    <p style="margin-top: 15px; color: #888;">
+                        💡 Astuce : Utilisez les outils mentionnés ci-dessous pour modifier votre User-Agent.
+                    </p>
+                `;
+            }
+        }
+
+        // Easter egg console
+        console.log('%c[Try-Pwn-Me] Challenge 01', 'color: white; font-size: 16px; font-weight: bold;');
+        console.log('%cVous êtes sur la bonne voie en utilisant les outils développeur !', 'color: #888; font-size: 12px;');
+    </script>
+</body>
+</html>

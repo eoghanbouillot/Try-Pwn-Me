@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenge 05 - RSA Weak Key | Try-Pwn-Me</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            padding: 40px 20px;
+            border-bottom: 1px solid #2a2a2a;
+            margin-bottom: 40px;
+        }
+
+        .back-link {
+            color: #888;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #ffffff;
+        }
+
+        .challenge-number {
+            font-size: 0.8em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+        }
+
+        .challenge-difficulty {
+            display: inline-block;
+            padding: 6px 16px;
+            background: #1a1a1a;
+            border: 1px solid #ff4444;
+            margin-bottom: 20px;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #ff4444;
+        }
+
+        .challenge-meta {
+            color: #666;
+            font-size: 0.9em;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .section {
+            background: #141414;
+            border: 1px solid #2a2a2a;
+            padding: 35px;
+            margin-bottom: 30px;
+        }
+
+        .section h2 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .section p {
+            color: #aaa;
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+
+        .hint-box {
+            background: #1a1a1a;
+            border-left: 3px solid #ff4444;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .hint-box strong {
+            color: #ff4444;
+        }
+
+        .objective-box {
+            background: #0f0f0f;
+            border: 1px solid #2a2a2a;
+            padding: 25px;
+            margin: 20px 0;
+        }
+
+        .objective-box h3 {
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .download-section {
+            background: #0a0a0a;
+            border: 2px solid #2a2a2a;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .download-btn {
+            background: #ffffff;
+            color: #000000;
+            border: none;
+            padding: 15px 40px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+        }
+
+        .download-btn:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        .flag-submission {
+            background: #0a0a0a;
+            border: 1px solid #2a2a2a;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .flag-input {
+            width: 100%;
+            padding: 15px;
+            background: #141414;
+            border: 1px solid #2a2a2a;
+            color: #ffffff;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            margin-bottom: 20px;
+            transition: border-color 0.3s ease;
+        }
+
+        .flag-input:focus {
+            outline: none;
+            border-color: #555;
+        }
+
+        .btn {
+            background: #ffffff;
+            color: #000000;
+            border: none;
+            padding: 15px 40px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        .message {
+            padding: 25px;
+            margin: 20px 0;
+            border: 1px solid #2a2a2a;
+            display: none;
+        }
+
+        .message.success {
+            background: #0a1a0a;
+            border-color: #224422;
+            color: #44ff44;
+            display: block;
+        }
+
+        .message.error {
+            background: #1a0a0a;
+            border-color: #442222;
+            color: #ff4444;
+            display: block;
+        }
+
+        .message h3 {
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        code {
+            background: #1a1a1a;
+            padding: 2px 8px;
+            font-family: 'Courier New', monospace;
+            color: #ddd;
+        }
+
+        .code-block {
+            background: #0a0a0a;
+            border: 1px solid #2a2a2a;
+            padding: 20px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            font-size: 0.9em;
+        }
+
+        .tools-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .tools-list li {
+            padding: 10px 0;
+            color: #aaa;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .tools-list li:last-child {
+            border-bottom: none;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+            border-top: 1px solid #2a2a2a;
+            margin-top: 60px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="index.html" class="back-link">← Retour aux challenges</a>
+            <div class="challenge-number">Challenge 05</div>
+            <h1>RSA Weak Key</h1>
+            <span class="challenge-difficulty">Difficile</span>
+            <div class="challenge-meta">
+                <span>🔐 Crypto</span>
+                <span>🎯 200 points</span>
+                <span>🔧 Asymétrique</span>
+            </div>
+        </header>
+
+        <div class="section">
+            <h2>Description</h2>
+            <p>
+                RSA est un algorithme de chiffrement asymétrique largement utilisé. Sa sécurité 
+                repose sur la difficulté de factoriser le produit de deux grands nombres premiers.
+            </p>
+            <p>
+                Dans ce challenge, une clé RSA a été générée avec un module n beaucoup trop petit. 
+                Cela rend possible la factorisation de n en ses deux facteurs premiers p et q, 
+                permettant ainsi de reconstruire la clé privée et déchiffrer le message.
+            </p>
+            
+            <div class="hint-box">
+                <strong>⚠️ Indice :</strong> Le module n peut être factorisé ! Utilisez FactorDB 
+                ou des outils de factorisation comme yafu, msieve ou même un script Python simple. 
+                Une fois p et q trouvés, vous pouvez calculer la clé privée d et déchiffrer le message.
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Objectif</h2>
+            <div class="objective-box">
+                <h3>🎯 Mission</h3>
+                <p>Factorisez n, calculez la clé privée, déchiffrez le message et trouvez le flag.</p>
+            </div>
+        </div>
+
+        <div class="download-section">
+            <h2 style="margin-bottom: 25px;">📥 Télécharger les Fichiers</h2>
+            <p style="margin-bottom: 20px; color: #aaa;">
+                Le paquet contient la clé publique RSA et le message chiffré
+            </p>
+            <a href="ctf-files/crypto_rsa.zip" class="download-btn" download>
+                📦 Télécharger RSA Challenge Files
+            </a>
+        </div>
+
+        <div class="flag-submission">
+            <h2 style="margin-bottom: 25px;">Soumettre le Flag</h2>
+            <input 
+                type="text" 
+                id="flag-input" 
+                class="flag-input" 
+                placeholder="TPM{...}"
+                autocomplete="off"
+            >
+            <button class="btn" onclick="checkFlag()">Valider le Flag</button>
+        </div>
+
+        <div id="flag-message" class="message"></div>
+
+        <div class="section">
+            <h2>Outils Recommandés</h2>
+            <ul class="tools-list">
+                <li><strong>FactorDB :</strong> factordb.com - Base de données de factorisations</li>
+                <li><strong>Python :</strong> sympy, pycryptodome pour RSA</li>
+                <li><strong>RsaCtfTool :</strong> Outil automatisé pour attaques RSA</li>
+                <li><strong>yafu :</strong> Factorisation de nombres</li>
+                <li><strong>msieve :</strong> Algorithme de factorisation</li>
+            </ul>
+        </div>
+
+        <div id="solution-section" class="section" style="display: none;">
+            <h2>✅ Solution et Explications</h2>
+            
+            <h3 style="margin: 20px 0 10px 0; font-size: 1.1em;">Étape 1 : Factoriser n</h3>
+            <p>Utilisez FactorDB.com ou un script Python :</p>
+            <div class="code-block">
+from sympy import factorint
+
+# Extraire n du fichier public_key.pem
+n = 10058277889  # Exemple
+factors = factorint(n)
+p, q = list(factors.keys())
+print(f"p = {p}")
+print(f"q = {q}")
+            </div>
+            
+            <h3 style="margin: 20px 0 10px 0; font-size: 1.1em;">Étape 2 : Calculer la clé privée</h3>
+            <div class="code-block">
+def modinv(a, m):
+    # Inverse modulaire
+    return pow(a, -1, m)
+
+e = 65537  # Exposant public
+phi = (p - 1) * (q - 1)
+d = modinv(e, phi)  # Exposant privé
+print(f"d = {d}")
+            </div>
+            
+            <h3 style="margin: 20px 0 10px 0; font-size: 1.1em;">Étape 3 : Déchiffrer le message</h3>
+            <div class="code-block">
+# c est le ciphertext du fichier encrypted_flag.txt
+c = 2475953962  # Exemple
+
+# Déchiffrement : m = c^d mod n
+m = pow(c, d, n)
+
+# Convertir en texte
+flag = m.to_bytes((m.bit_length() + 7) // 8, 'big').decode()
+print(f"Flag: {flag}")
+            </div>
+            
+            <h3 style="margin: 20px 0 10px 0; font-size: 1.1em;">Comprendre RSA</h3>
+            <p><strong>Principe de RSA :</strong></p>
+            <ul class="tools-list">
+                <li><strong>Génération :</strong> Choisir deux grands nombres premiers p et q</li>
+                <li><strong>Module :</strong> n = p × q</li>
+                <li><strong>Phi :</strong> φ(n) = (p-1) × (q-1)</li>
+                <li><strong>Clé publique :</strong> (n, e) où e est souvent 65537</li>
+                <li><strong>Clé privée :</strong> d tel que e × d ≡ 1 (mod φ(n))</li>
+                <li><strong>Chiffrement :</strong> c = m^e mod n</li>
+                <li><strong>Déchiffrement :</strong> m = c^d mod n</li>
+            </ul>
+            <p style="margin-top: 15px;"><strong>Sécurité de RSA :</strong></p>
+            <p>
+                La sécurité de RSA repose sur l'impossibilité de factoriser de très grands nombres. 
+                Pour être sécurisé, n doit faire au moins 2048 bits (617 chiffres décimaux). 
+                Dans ce challenge, n est beaucoup trop petit et facilement factorisable.
+            </p>
+            
+            <h3 style="margin: 20px 0 10px 0; font-size: 1.1em;">Attaques Communes sur RSA</h3>
+            <ul class="tools-list">
+                <li><strong>Small n :</strong> Module trop petit (ce challenge)</li>
+                <li><strong>Small e :</strong> Exposant public trop petit</li>
+                <li><strong>Common modulus :</strong> Même n pour différents messages</li>
+                <li><strong>Wiener's attack :</strong> d trop petit</li>
+                <li><strong>Broadcast attack :</strong> Même message avec différents n</li>
+            </ul>
+        </div>
+
+        <footer>
+            <p>Try-Pwn-Me - Challenge 05</p>
+        </footer>
+    </div>
+
+    <script>
+        function checkFlag() {
+            const flagInput = document.getElementById('flag-input').value.trim();
+            const messageDiv = document.getElementById('flag-message');
+            const correctFlag = 'TPM{w34k_rsa_k3y_1s_br0k3n}';
+            
+            if (flagInput === '') {
+                messageDiv.className = 'message error';
+                messageDiv.innerHTML = `
+                    <h3>❌ Erreur</h3>
+                    <p>Veuillez entrer un flag avant de valider.</p>
+                `;
+                return;
+            }
+            
+            if (flagInput === correctFlag) {
+                messageDiv.className = 'message success';
+                messageDiv.innerHTML = `
+                    <h3>🎉 CHALLENGE RÉUSSI !</h3>
+                    <p>Impressionnant ! Vous avez réussi à casser RSA en factorisant n.</p>
+                    <p style="margin-top: 15px; font-family: 'Courier New', monospace; font-size: 1.1em;">
+                        FLAG VALIDÉ: ${correctFlag}
+                    </p>
+                    <p style="margin-top: 20px; font-size: 0.95em; color: #888;">
+                        🎓 Ce que vous avez appris : La sécurité de RSA dépend directement de la 
+                        taille de la clé. Un module n trop petit peut être factorisé en temps 
+                        raisonnable, compromettant complètement la sécurité du système. En production, 
+                        utilisez toujours des clés RSA d'au moins 2048 bits (4096 bits recommandé).
+                    </p>
+                `;
+                
+                // Afficher la section solution
+                document.getElementById('solution-section').style.display = 'block';
+                document.getElementById('solution-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                messageDiv.className = 'message error';
+                messageDiv.innerHTML = `
+                    <h3>❌ Flag Incorrect</h3>
+                    <p>Le flag que vous avez entré n'est pas correct. Continuez vos recherches !</p>
+                    <p style="margin-top: 15px; color: #888;">
+                        💡 Étapes : 1) Factorisez n (FactorDB ou sympy), 2) Calculez φ(n), 
+                        3) Calculez d (inverse modulaire de e), 4) Déchiffrez c avec d.
+                    </p>
+                `;
+            }
+        }
+
+        document.getElementById('flag-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkFlag();
+            }
+        });
+
+        console.log('%c[Try-Pwn-Me] Challenge 05 - RSA Weak Key', 'color: white; font-size: 16px; font-weight: bold;');
+        console.log('%cFactorisation RSA - Niveau difficile', 'color: #888; font-size: 12px;');
+    </script>
+</body>
+</html>

