@@ -411,7 +411,7 @@ print(f"Flag: {flag}")
         function checkFlag() {
             const flagInput = document.getElementById('flag-input').value.trim();
             const messageDiv = document.getElementById('flag-message');
-            const correctFlag = 'TPM{w34k_rsa_k3y_1s_br0k3n}';
+            const correctFlagHex = "54504d7b7733346b5f7273615f6b33795f31735f6272306b336e7d";
             
             if (flagInput === '') {
                 messageDiv.className = 'message error';
@@ -422,13 +422,16 @@ print(f"Flag: {flag}")
                 return;
             }
             
-            if (flagInput === correctFlag) {
+            // Conversion de l'input en Hexadécimal
+            const inputHex = Array.from(flagInput).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
+
+            if (inputHex === correctFlagHex) {
                 messageDiv.className = 'message success';
                 messageDiv.innerHTML = `
                     <h3>🎉 CHALLENGE RÉUSSI !</h3>
                     <p>Impressionnant ! Vous avez réussi à casser RSA en factorisant n.</p>
                     <p style="margin-top: 15px; font-family: 'Courier New', monospace; font-size: 1.1em;">
-                        FLAG VALIDÉ: ${correctFlag}
+                        FLAG VALIDÉ: ${flagInput}
                     </p>
                     <p style="margin-top: 20px; font-size: 0.95em; color: #888;">
                         🎓 Ce que vous avez appris : La sécurité de RSA dépend directement de la 

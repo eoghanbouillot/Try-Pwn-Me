@@ -324,12 +324,14 @@
                 statusDiv.innerHTML = '✅ Accès autorisé - Bienvenue administrateur !';
                 statusDiv.className = 'access-status granted';
                 
+                // Flag obfusqué pour l'affichage (Base64)
+                const flagB64 = "VFZNe3VzM3JfYWczbnRfbTRzdDNyXzIwMjR9";
                 messageDiv.className = 'message success';
                 messageDiv.innerHTML = `
                     <h3>🎉 CHALLENGE RÉUSSI !</h3>
                     <p>Félicitations ! Vous avez réussi à modifier votre User-Agent pour contourner la vérification.</p>
                     <div class="flag-display">
-                        FLAG: TPM{us3r_ag3nt_m4st3r_2024}
+                        FLAG: ${atob(flagB64)}
                     </div>
                     <p style="margin-top: 20px; font-size: 0.95em; color: #888;">
                         ⚠️ Note de sécurité : Ce type de vérification côté client n'est pas sécurisé 

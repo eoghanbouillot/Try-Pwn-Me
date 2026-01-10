@@ -385,7 +385,7 @@ tail -n 1 multilayer_encoded.txt | base64 -d | base64 -d | base64 -d | base64 -d
         function checkFlag() {
             const flagInput = document.getElementById('flag-input').value.trim();
             const messageDiv = document.getElementById('flag-message');
-            const correctFlag = 'TPM{b4s364_1s_n0t_3ncryp7i0n}';
+            const correctFlagHex = "54504d7b6234733336345f31735f6e30745f336e637279703769306e7d";
             
             if (flagInput === '') {
                 messageDiv.className = 'message error';
@@ -396,13 +396,16 @@ tail -n 1 multilayer_encoded.txt | base64 -d | base64 -d | base64 -d | base64 -d
                 return;
             }
             
-            if (flagInput === correctFlag) {
+            // Conversion de l'input en Hexadécimal
+            const inputHex = Array.from(flagInput).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
+
+            if (inputHex === correctFlagHex) {
                 messageDiv.className = 'message success';
                 messageDiv.innerHTML = `
                     <h3>🎉 CHALLENGE RÉUSSI !</h3>
                     <p>Excellent travail ! Vous avez décodé toutes les couches de Base64.</p>
                     <p style="margin-top: 15px; font-family: 'Courier New', monospace; font-size: 1.1em;">
-                        FLAG VALIDÉ: ${correctFlag}
+                        FLAG VALIDÉ: ${flagInput}
                     </p>
                     <p style="margin-top: 20px; font-size: 0.95em; color: #888;">
                         ⚠️ Leçon importante : Base64 n'est PAS un chiffrement ! C'est un simple 

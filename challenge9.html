@@ -249,11 +249,15 @@
             const messageDiv = document.getElementById('result-message');
             
             if (document.cookie.includes('user_role=admin')) {
+                // Flag obfusqué en Base64
+                const flagHex = "54504d7b6330306b3133735f3472335f64336c3163313075735f6275745f316e7333637572337d";
+                // Décodage Hex pour affichage
+                const flag = flagHex.match(/.{1,2}/g).map(byte => String.fromCharCode(parseInt(byte, 16))).join('');
                 messageDiv.className = 'message success';
                 messageDiv.innerHTML = `
                     <h3>🎉 ACCÈS AUTORISÉ !</h3>
                     <p>Bienvenue Administrateur. Vous avez réussi à modifier vos privilèges.</p>
-                    <p style="margin-top: 15px; font-family: 'Courier New', monospace;">FLAG: TPM{c00k13s_4r3_d3l1c10us_but_1ns3cur3}</p>
+                    <p style="margin-top: 15px; font-family: 'Courier New', monospace;">FLAG: ${flag}</p>
                 `;
             } else {
                 messageDiv.className = 'message error';

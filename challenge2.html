@@ -339,7 +339,7 @@
         function checkFlag() {
             const flagInput = document.getElementById('flag-input').value.trim();
             const messageDiv = document.getElementById('flag-message');
-            const correctFlag = 'TPM{s0urc3_c0d3_1s_y0ur_fr13nd}';
+            const correctFlagHex = "54504d7b7330757263335f633064335f31735f793075725f667231336e647d";
             
             if (flagInput === '') {
                 messageDiv.className = 'message error';
@@ -350,13 +350,16 @@
                 return;
             }
             
-            if (flagInput === correctFlag) {
+            // Conversion de l'input en Hexadécimal pour comparaison sécurisée
+            const inputHex = Array.from(flagInput).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
+
+            if (inputHex === correctFlagHex) {
                 messageDiv.className = 'message success';
                 messageDiv.innerHTML = `
                     <h3>🎉 CHALLENGE RÉUSSI !</h3>
                     <p>Félicitations ! Vous avez trouvé le flag caché dans le code source.</p>
                     <div class="flag-display">
-                        FLAG VALIDÉ: ${correctFlag}
+                        FLAG VALIDÉ: ${flagInput}
                     </div>
                     <p style="margin-top: 20px; font-size: 0.95em; color: #888;">
                         ⚠️ Leçon importante : Ne jamais stocker d'informations sensibles 

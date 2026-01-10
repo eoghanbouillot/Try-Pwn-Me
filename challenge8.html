@@ -207,12 +207,14 @@ cursor.execute(
             resultDiv.style.display = 'block';
             
             if (isInjected) {
+                // Flag obfusqué en Base64 pour l'affichage
+                const flagB64 = "VFZNe3NxbF8xbmozY3QxMG5fYnlwNHNzX3N1Y2Mz3NzfQ==";
                 resultDiv.className = 'login-result success';
                 resultDiv.innerHTML = `
                     <h3>✅ Connexion Réussie !</h3>
                     <p>Bienvenue, Administrateur !</p>
                     <p style="margin-top: 10px; font-family: 'Courier New', monospace; color: #44ff44;">
-                        FLAG: TPM{sql_1nj3ct10n_byp4ss_succ3ss}
+                        FLAG: ${atob(flagB64)}
                     </p>
                     <p style="margin-top: 10px; font-size: 0.85em; color: #888;">
                         Requête exécutée : <br>
@@ -240,7 +242,7 @@ cursor.execute(
         function checkFlag() {
             const flagInput = document.getElementById('flag-input').value.trim();
             const messageDiv = document.getElementById('flag-message');
-            const correctFlag = 'TPM{sql_1nj3ct10n_byp4ss_succ3ss}';
+            const correctFlagHex = "54504d7b73716c5f316e6a33637431306e5f6279703473735f737563633373737d";
             
             if (flagInput === '') {
                 messageDiv.className = 'message error';
@@ -248,13 +250,16 @@ cursor.execute(
                 return;
             }
             
-            if (flagInput === correctFlag) {
+            // Conversion de l'input en Hexadécimal
+            const inputHex = Array.from(flagInput).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
+
+            if (inputHex === correctFlagHex) {
                 messageDiv.className = 'message success';
                 messageDiv.innerHTML = `
                     <h3>🎉 CHALLENGE RÉUSSI !</h3>
                     <p>Excellent ! Vous avez contourné l'authentification SQL.</p>
                     <p style="margin-top: 15px; font-family: 'Courier New', monospace; font-size: 1.1em;">
-                        FLAG VALIDÉ: ${correctFlag}
+                        FLAG VALIDÉ: ${flagInput}
                     </p>
                     <p style="margin-top: 20px; font-size: 0.95em; color: #888;">
                         ⚠️ Leçon importante : TOUJOURS utiliser des requêtes préparées avec paramètres 

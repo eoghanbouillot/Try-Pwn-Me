@@ -445,7 +445,7 @@ x/wx &authenticated
         function checkFlag() {
             const flagInput = document.getElementById('flag-input').value.trim();
             const messageDiv = document.getElementById('flag-message');
-            const correctFlag = 'TPM{buff3r_0v3rfl0w_m4st3r}';
+            const correctFlagHex = "54504d7b6275666633725f30763372666c30775f6d34737433727d";
             
             if (flagInput === '') {
                 messageDiv.className = 'message error';
@@ -456,13 +456,16 @@ x/wx &authenticated
                 return;
             }
             
-            if (flagInput === correctFlag) {
+            // Conversion de l'input en Hexadécimal
+            const inputHex = Array.from(flagInput).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
+
+            if (inputHex === correctFlagHex) {
                 messageDiv.className = 'message success';
                 messageDiv.innerHTML = `
                     <h3>🎉 CHALLENGE RÉUSSI !</h3>
                     <p>Excellent ! Vous avez exploité le buffer overflow avec succès.</p>
                     <p style="margin-top: 15px; font-family: 'Courier New', monospace; font-size: 1.1em;">
-                        FLAG VALIDÉ: ${correctFlag}
+                        FLAG VALIDÉ: ${flagInput}
                     </p>
                     <p style="margin-top: 20px; font-size: 0.95em; color: #888;">
                         🎓 Félicitations ! Vous venez d'exploiter votre premier buffer overflow. 

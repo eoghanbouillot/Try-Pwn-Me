@@ -20,6 +20,9 @@ Ce fichier contient tous les flags des challenges. Ne regardez pas si vous voule
 ### Challenge 09 - Cookie Manipulation
 **Flag:** `TPM{c00k13s_4r3_d3l1c10us_but_1ns3cur3}`
 
+### Challenge 10 - OSINT Genesis
+**Flag:** `TPM{The_Times_03/Jan/2009_Chancellor_on_brink_of_second_bailout_for_banks}`
+
 ---
 
 ## 🔐 CRYPTOGRAPHIE
@@ -59,8 +62,9 @@ Ce fichier contient tous les flags des challenges. Ne regardez pas si vous voule
 | 07 | PWN | Difficile | 200 | `TPM{f0rm4t_str1ng_pwn3d}` |
 | 08 | Web | Moyen | 100 | `TPM{sql_1nj3ct10n_byp4ss_succ3ss}` |
 | 09 | Web | Facile | 50 | `TPM{c00k13s_4r3_d3l1c10us_but_1ns3cur3}` |
+| 10 | OSINT | Difficile | 150 | `TPM{The_Times_03/Jan/2009_Chancellor_on_brink_of_second_bailout_for_banks}` |
 
-**Total : 9 challenges • 875 points**
+**Total : 10 challenges • 1025 points**
 
 ---
 
@@ -77,6 +81,7 @@ Chaque flag enseigne une leçon importante :
 7. **Format String** → Ne jamais utiliser printf(user_input)
 8. **SQL Injection** → Toujours utiliser des requêtes préparées
 9. **Cookies** → Ne jamais faire confiance aux cookies pour les privilèges
+10. **OSINT** → Internet n'oublie jamais (Blockchain)
 
 ---
 

@@ -380,7 +380,7 @@ cat encrypted_message.txt | tr 'A-Za-z' 'N-ZA-Mn-za-m'
         function checkFlag() {
             const flagInput = document.getElementById('flag-input').value.trim();
             const messageDiv = document.getElementById('flag-message');
-            const correctFlag = 'TPM{c4e14r_i4_n0t_4_good_encrrypti0n}';
+            const correctFlagHex = "54504d7b6334653134725f69345f6e30745f345f676f6f645f656e63727279707469306e7d";
             
             if (flagInput === '') {
                 messageDiv.className = 'message error';
@@ -391,13 +391,16 @@ cat encrypted_message.txt | tr 'A-Za-z' 'N-ZA-Mn-za-m'
                 return;
             }
             
-            if (flagInput === correctFlag) {
+            // Conversion de l'input en Hexadécimal
+            const inputHex = Array.from(flagInput).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
+
+            if (inputHex === correctFlagHex) {
                 messageDiv.className = 'message success';
                 messageDiv.innerHTML = `
                     <h3>🎉 CHALLENGE RÉUSSI !</h3>
                     <p>Félicitations ! Vous avez déchiffré le message Caesar.</p>
                     <p style="margin-top: 15px; font-family: 'Courier New', monospace; font-size: 1.1em;">
-                        FLAG VALIDÉ: ${correctFlag}
+                        FLAG VALIDÉ: ${flagInput}
                     </p>
                     <p style="margin-top: 20px; font-size: 0.95em; color: #888;">
                         ⚠️ Leçon importante : Le chiffrement de César n'est pas sécurisé pour 

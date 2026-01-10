@@ -149,15 +149,15 @@ Stockage d'informations sensibles côté client. Les données côté client sont
 
 ## 📊 STATISTIQUES
 
-**Total de challenges:** 2  
-**Catégories disponibles:** Web (2)  
-**Points totaux disponibles:** 875
+**Total de challenges:** 10
+**Catégories disponibles:** Web, Crypto, PWN, OSINT
+**Points totaux disponibles:** 1025
 
 **Répartition par difficulté:**
 - ⭐ Très Facile: 1 challenge (25 points)
  - ⭐⭐ Facile: 3 challenges (150 points)
  - ⭐⭐⭐ Moyen: 3 challenges (300 points)
- - ⭐⭐⭐⭐ Difficile: 2 challenges (400 points)
+ - ⭐⭐⭐⭐ Difficile: 3 challenges (550 points)
 - ⭐⭐⭐⭐⭐ Expert: 0 challenge
 
 ---

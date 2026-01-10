@@ -196,7 +196,7 @@ p.interactive()
         function checkFlag() {
             const flagInput = document.getElementById('flag-input').value.trim();
             const messageDiv = document.getElementById('flag-message');
-            const correctFlag = 'TPM{f0rm4t_str1ng_pwn3d}';
+            const correctFlagHex = "54504d7b6630726d34745f737472316e675f70776e33647d";
             
             if (flagInput === '') {
                 messageDiv.className = 'message error';
@@ -204,13 +204,16 @@ p.interactive()
                 return;
             }
             
-            if (flagInput === correctFlag) {
+            // Conversion de l'input en Hexadécimal
+            const inputHex = Array.from(flagInput).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
+
+            if (inputHex === correctFlagHex) {
                 messageDiv.className = 'message success';
                 messageDiv.innerHTML = `
                     <h3>🎉 CHALLENGE RÉUSSI !</h3>
                     <p>Impressionnant ! Format string exploitation maîtrisée.</p>
                     <p style="margin-top: 15px; font-family: 'Courier New', monospace; font-size: 1.1em;">
-                        FLAG VALIDÉ: ${correctFlag}
+                        FLAG VALIDÉ: ${flagInput}
                     </p>
                     <p style="margin-top: 20px; font-size: 0.95em; color: #888;">
                         🎓 Les vulnérabilités format string sont parmi les plus puissantes en exploitation 

@@ -4,7 +4,7 @@
 
 Plateforme d'entraînement CTF (Capture The Flag) complète avec 8 challenges couvrant 4 catégories différentes.
 
-**🎯 Total : 9 challenges • 4 catégories • 875 points**
+**🎯 Total : 10 challenges • 5 catégories • 1025 points**
 
 ---
 
@@ -48,6 +48,7 @@ try-pwn-me/
 ├── challenge7.html         # Format String
 ├── challenge8.html         # SQL Injection
 ├── challenge9.html         # Cookie Manipulation
+├── challenge10.html        # OSINT Genesis
 ├── ctf-files/             # Fichiers téléchargeables pour les challenges
 │   ├── crypto_caesar.zip
 │   ├── crypto_base64.zip
@@ -85,6 +86,12 @@ try-pwn-me/
 |---|-----|------------|--------|-------------|
 | 06 | Buffer Overflow | ⭐⭐⭐ Moyen | 100 | Exploiter un débordement de buffer |
 | 07 | Format String | ⭐⭐⭐⭐ Difficile | 200 | Vulnérabilité format string |
+
+### 🕵️ OSINT (1 challenge - 150 points)
+
+| # | Nom | Difficulté | Points | Description |
+|---|-----|------------|--------|-------------|
+| 10 | Genesis | ⭐⭐⭐⭐ Difficile | 150 | Recherche historique Blockchain |
 
 ---
 
@@ -157,7 +164,7 @@ Chaque archive contient tous les fichiers nécessaires pour le challenge.
 - ⭐⭐⭐⭐ Difficile : 200 points
 - ⭐⭐⭐⭐⭐ Expert : 500 points (challenges futurs)
 
-**Total actuel : 875 points**
+**Total actuel : 1025 points**
 
 ---
 
@@ -170,6 +177,7 @@ Format standard : `TPM{contenu_du_flag}`
 - `TPM{s0urc3_c0d3_1s_y0ur_fr13nd}`
 - `TPM{buff3r_0v3rfl0w_m4st3r}`
 - `TPM{c00k13s_4r3_d3l1c10us_but_1ns3cur3}`
+- `TPM{The_Times_03/Jan/2009_Chancellor_on_brink_of_second_bailout_for_banks}`
 
 ⚠️ **Les flags sont sensibles à la casse !**
 
