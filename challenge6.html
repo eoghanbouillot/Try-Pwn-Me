@@ -305,13 +305,6 @@
                 Si vous êtes sur Windows ou Mac, utilisez une machine virtuelle (VirtualBox, VMware) 
                 ou WSL2 (Windows Subsystem for Linux).
             </div>
-            
-            <div class="hint-box">
-                <strong>💡 Indice :</strong> Le programme utilise la fonction <code>gets()</code> 
-                qui ne vérifie pas la taille de l'input. Le buffer fait 64 bytes. Que se passe-t-il 
-                si vous envoyez plus de 64 bytes ? Vous devez écraser <code>authenticated</code> 
-                avec la valeur 0xdeadbeef (en little-endian).
-            </div>
         </div>
 
         <div class="section">

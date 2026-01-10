@@ -264,7 +264,7 @@
 <body>
     <div class="container">
         <header>
-            <a href="ctf-files/index.html" class="back-link">← Retour aux challenges</a>
+            <a href="index.html" class="back-link">← Retour aux challenges</a>
             <div class="challenge-number">Challenge 03</div>
             <h1>Caesar Cipher</h1>
             <span class="challenge-difficulty">Facile</span>
@@ -285,11 +285,6 @@
                 Jules César l'utilisait pour communiquer avec ses généraux. Bien que très simple, 
                 c'est un excellent exercice pour comprendre les principes de base de la cryptographie.
             </p>
-            
-            <div class="hint-box">
-                <strong>💡 Indice :</strong> Il n'y a que 26 décalages possibles en alphabet latin. 
-                Vous pouvez tous les tester ! La rotation de 13 positions (ROT13) est particulièrement populaire.
-            </div>
         </div>
 
         <div class="section">
@@ -305,7 +300,7 @@
             <p style="margin-bottom: 20px; color: #aaa;">
                 Le fichier contient un message chiffré avec Caesar Cipher
             </p>
-            <a href="crypto_caesar.zip" class="download-btn" download>
+            <a href="ctf-files/crypto_caesar.zip" class="download-btn" download>
                 📦 Télécharger encrypted_message.txt
             </a>
         </div>
@@ -385,7 +380,7 @@ cat encrypted_message.txt | tr 'A-Za-z' 'N-ZA-Mn-za-m'
         function checkFlag() {
             const flagInput = document.getElementById('flag-input').value.trim();
             const messageDiv = document.getElementById('flag-message');
-            const correctFlag = 'TPM{c4es4r_is_n0t_4_good_encryption}';
+            const correctFlag = 'TPM{c4e14r_i4_n0t_4_good_encrrypti0n}';
             
             if (flagInput === '') {
                 messageDiv.className = 'message error';

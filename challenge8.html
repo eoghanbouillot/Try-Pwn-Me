@@ -73,14 +73,6 @@
                 Dans ce challenge, vous devez contourner le système d'authentification en exploitant 
                 une injection SQL dans le formulaire de connexion.
             </p>
-            
-            <div class="hint-box">
-                <strong>💡 Indice :</strong> La requête SQL ressemble à : 
-                <code>SELECT * FROM users WHERE username='...' AND password='...'</code>
-                <br><br>
-                Que se passe-t-il si vous injectez <code>' OR '1'='1</code> dans le username ?
-                Essayez aussi des variantes comme <code>admin'--</code> ou <code>' OR 1=1--</code>
-            </div>
         </div>
 
         <div class="section">
@@ -294,9 +286,6 @@ cursor.execute(
         document.getElementById('flag-input').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') checkFlag();
         });
-
-        console.log('%c[Try-Pwn-Me] Challenge 08 - SQL Injection', 'color: white; font-size: 16px; font-weight: bold;');
-        console.log('%cEssayez des payloads comme: \' OR 1=1--', 'color: #888; font-size: 12px;');
     </script>
 </body>
 </html>

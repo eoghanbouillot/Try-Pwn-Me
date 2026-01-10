@@ -17,6 +17,7 @@ try-pwn-me/
 ├── index.html          # Page d'accueil principale
 ├── challenge1.html     # Challenge User-Agent
 ├── challenge2.html     # Challenge Source Code
+├── challenge9.html     # Challenge Cookie Manipulation
 └── challenges.md       # Ce fichier (documentation)
 ```
 
@@ -150,13 +151,13 @@ Stockage d'informations sensibles côté client. Les données côté client sont
 
 **Total de challenges:** 2  
 **Catégories disponibles:** Web (2)  
-**Points totaux disponibles:** 75
+**Points totaux disponibles:** 875
 
 **Répartition par difficulté:**
 - ⭐ Très Facile: 1 challenge (25 points)
-- ⭐⭐ Facile: 1 challenge (50 points)
-- ⭐⭐⭐ Moyen: 0 challenge
-- ⭐⭐⭐⭐ Difficile: 0 challenge
+ - ⭐⭐ Facile: 3 challenges (150 points)
+ - ⭐⭐⭐ Moyen: 3 challenges (300 points)
+ - ⭐⭐⭐⭐ Difficile: 2 challenges (400 points)
 - ⭐⭐⭐⭐⭐ Expert: 0 challenge
 
 ---
@@ -164,13 +165,13 @@ Stockage d'informations sensibles côté client. Les données côté client sont
 ## 🎯 CHALLENGES À VENIR
 
 ### Web - Niveau Débutant
-- [ ] Cookie Manipulation (Modifier les cookies)
+- [x] Cookie Manipulation (Modifier les cookies)
 - [ ] Robots.txt Discovery (Fichier robots.txt)
 - [ ] Hidden Form Fields (Champs cachés dans les formulaires)
 - [ ] Client-Side Validation Bypass (Contourner validation JS)
 
 ### Web - Niveau Intermédiaire
-- [ ] SQL Injection - Login Bypass
+- [x] SQL Injection - Login Bypass
 - [ ] XSS Reflected (Cross-Site Scripting)
 - [ ] Directory Traversal (Path Traversal)
 - [ ] File Upload Bypass
@@ -185,11 +186,11 @@ Stockage d'informations sensibles côté client. Les données côté client sont
 - [ ] HTTP Request Smuggling
 
 ### Cryptographie
-- [ ] Caesar Cipher Decoding
-- [ ] Base64 Multiple Encoding
+- [x] Caesar Cipher Decoding
+- [x] Base64 Multiple Encoding
 - [ ] ROT13 with Twist
 - [ ] Hash Cracking (MD5/SHA1)
-- [ ] Weak RSA Implementation
+- [x] Weak RSA Implementation
 
 ### Forensics
 - [ ] Image Metadata (EXIF)

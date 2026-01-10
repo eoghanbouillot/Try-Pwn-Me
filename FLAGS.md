@@ -17,12 +17,16 @@ Ce fichier contient tous les flags des challenges. Ne regardez pas si vous voule
 ### Challenge 08 - SQL Injection
 **Flag:** `TPM{sql_1nj3ct10n_byp4ss_succ3ss}`
 
+### Challenge 09 - Cookie Manipulation
+**Flag:** `TPM{c00k13s_4r3_d3l1c10us_but_1ns3cur3}`
+
 ---
 
 ## 🔐 CRYPTOGRAPHIE
 
 ### Challenge 03 - Caesar Cipher
-**Flag:** `TPM{c4es4r_is_n0t_4_good_encryption}`
+**Flag:** `TPM{c4e14r_i4_n0t_4_good_encrrypti0n}`
+
 
 ### Challenge 04 - Base64 Multi-Layers
 **Flag:** `TPM{b4s364_1s_n0t_3ncryp7i0n}`
@@ -48,14 +52,15 @@ Ce fichier contient tous les flags des challenges. Ne regardez pas si vous voule
 |-----------|-----------|------------|--------|------|
 | 01 | Web | Facile | 50 | `TPM{us3r_ag3nt_m4st3r_2024}` |
 | 02 | Web | Très Facile | 25 | `TPM{s0urc3_c0d3_1s_y0ur_fr13nd}` |
-| 03 | Crypto | Facile | 50 | `TPM{c4es4r_is_n0t_4_good_encryption}` |
+| 03 | Crypto | Facile | 50 | `TPM{c4e14r_i4_n0t_4_good_encrrypti0n}` |
 | 04 | Crypto | Moyen | 100 | `TPM{b4s364_1s_n0t_3ncryp7i0n}` |
 | 05 | Crypto | Difficile | 200 | `TPM{w34k_rsa_k3y_1s_br0k3n}` |
 | 06 | PWN | Moyen | 100 | `TPM{buff3r_0v3rfl0w_m4st3r}` |
 | 07 | PWN | Difficile | 200 | `TPM{f0rm4t_str1ng_pwn3d}` |
 | 08 | Web | Moyen | 100 | `TPM{sql_1nj3ct10n_byp4ss_succ3ss}` |
+| 09 | Web | Facile | 50 | `TPM{c00k13s_4r3_d3l1c10us_but_1ns3cur3}` |
 
-**Total : 8 challenges • 725 points**
+**Total : 9 challenges • 875 points**
 
 ---
 
@@ -71,6 +76,7 @@ Chaque flag enseigne une leçon importante :
 6. **Buffer Overflow** → Toujours valider les tailles de buffers
 7. **Format String** → Ne jamais utiliser printf(user_input)
 8. **SQL Injection** → Toujours utiliser des requêtes préparées
+9. **Cookies** → Ne jamais faire confiance aux cookies pour les privilèges
 
 ---
 

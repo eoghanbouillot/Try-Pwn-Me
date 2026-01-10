@@ -82,6 +82,7 @@ try-pwn-me/
 1. **Challenge 02** (Très Facile) - 5 min
 2. **Challenge 01** (Facile) - 10 min
 3. **Challenge 03** (Facile) - 15 min
+4. **Challenge 09** (Facile) - 15 min
 4. **Challenge 04** (Moyen) - 20 min
 5. **Challenge 08** (Moyen) - 30 min
 6. **Challenge 06** (Moyen) - 1-2h

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenge 09 - Cookie Manipulation | Try-Pwn-Me</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            padding: 40px 20px;
+            border-bottom: 1px solid #2a2a2a;
+            margin-bottom: 40px;
+        }
+
+        .back-link {
+            color: #888;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #ffffff;
+        }
+
+        .challenge-number {
+            font-size: 0.8em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+        }
+
+        .challenge-difficulty {
+            display: inline-block;
+            padding: 6px 16px;
+            background: #1a1a1a;
+            border: 1px solid #4a4a4a;
+            margin-bottom: 20px;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .challenge-meta {
+            color: #666;
+            font-size: 0.9em;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .section {
+            background: #141414;
+            border: 1px solid #2a2a2a;
+            padding: 35px;
+            margin-bottom: 30px;
+        }
+
+        .section h2 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .section p {
+            color: #aaa;
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+
+        .hint-box {
+            background: #1a1a1a;
+            border-left: 3px solid #444;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .hint-box strong {
+            color: #fff;
+        }
+
+        .objective-box {
+            background: #0f0f0f;
+            border: 1px solid #2a2a2a;
+            padding: 25px;
+            margin: 20px 0;
+        }
+
+        .access-zone {
+            background: #0a0a0a;
+            border: 1px solid #2a2a2a;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .cookie-status {
+            font-family: 'Courier New', monospace;
+            background: #141414;
+            padding: 15px;
+            border: 1px solid #333;
+            margin-bottom: 20px;
+            color: #aaa;
+        }
+
+        .btn {
+            background: #ffffff;
+            color: #000000;
+            border: none;
+            padding: 15px 40px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        .message {
+            padding: 25px;
+            margin: 20px 0;
+            border: 1px solid #2a2a2a;
+            display: none;
+        }
+
+        .message.success {
+            background: #0a1a0a;
+            border-color: #224422;
+            color: #44ff44;
+            display: block;
+        }
+
+        .message.error {
+            background: #1a0a0a;
+            border-color: #442222;
+            color: #ff4444;
+            display: block;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+            border-top: 1px solid #2a2a2a;
+            margin-top: 60px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="index.html" class="back-link">← Retour aux challenges</a>
+            <div class="challenge-number">Challenge 09</div>
+            <h1>Cookie Manipulation</h1>
+            <span class="challenge-difficulty">Facile</span>
+            <div class="challenge-meta">
+                <span>🌐 Web</span>
+                <span>🎯 50 points</span>
+                <span>🔧 Cookies</span>
+            </div>
+        </header>
+
+        <div class="section">
+            <h2>Description</h2>
+            <p>
+                Les cookies sont de petits fichiers stockés par votre navigateur pour conserver 
+                des informations d'état, comme votre session utilisateur.
+            </p>
+            <p>
+                Si un site web se fie uniquement aux cookies pour déterminer vos privilèges 
+                sans vérification sécurisée côté serveur, vous pouvez modifier ces valeurs 
+                pour élever vos privilèges.
+            </p>
+        </div>
+
+        <div class="section">
+            <h2>Objectif</h2>
+            <div class="objective-box">
+                <h3>🎯 Mission</h3>
+                <p>Modifiez la valeur de votre cookie pour devenir "admin" et accéder au flag.</p>
+            </div>
+        </div>
+
+        <div class="access-zone">
+            <h2 style="margin-bottom: 25px;">Panneau d'Administration</h2>
+            <div id="current-cookie" class="cookie-status">
+                Chargement des cookies...
+            </div>
+            <button class="btn" onclick="checkPrivileges()">Vérifier mes privilèges</button>
+        </div>
+
+        <div id="result-message" class="message"></div>
+
+        <footer>
+            <p>Try-Pwn-Me - Challenge 09</p>
+        </footer>
+    </div>
+
+    <script>
+        // Initialisation du cookie au chargement si inexistant
+        if (!document.cookie.includes('user_role=')) {
+            document.cookie = "user_role=guest; path=/; SameSite=Lax";
+        }
+
+        function updateDisplay() {
+            const cookies = document.cookie.split('; ').find(row => row.startsWith('user_role='));
+            const role = cookies ? cookies.split('=')[1] : 'undefined';
+            document.getElementById('current-cookie').innerText = `Rôle actuel détecté : ${role}`;
+        }
+
+        function checkPrivileges() {
+            updateDisplay();
+            const messageDiv = document.getElementById('result-message');
+            
+            if (document.cookie.includes('user_role=admin')) {
+                messageDiv.className = 'message success';
+                messageDiv.innerHTML = `
+                    <h3>🎉 ACCÈS AUTORISÉ !</h3>
+                    <p>Bienvenue Administrateur. Vous avez réussi à modifier vos privilèges.</p>
+                    <p style="margin-top: 15px; font-family: 'Courier New', monospace;">FLAG: TPM{c00k13s_4r3_d3l1c10us_but_1ns3cur3}</p>
+                `;
+            } else {
+                messageDiv.className = 'message error';
+                messageDiv.innerHTML = `
+                    <h3>❌ ACCÈS REFUSÉ</h3>
+                    <p>Vous êtes connecté en tant qu'invité (guest). Seuls les administrateurs peuvent voir le flag.</p>
+                `;
+            }
+        }
+
+        // Mise à jour initiale
+        updateDisplay();
+
+        // Vérification si les cookies fonctionnent (souvent bloqués en file://)
+        if (!document.cookie.includes('user_role=')) {
+            const messageDiv = document.getElementById('result-message');
+            messageDiv.className = 'message error';
+            messageDiv.style.display = 'block';
+            messageDiv.innerHTML = `
+                <h3>⚠️ Cookies non détectés</h3>
+                <p>Les cookies ne fonctionnent pas correctement. Si vous avez ouvert ce fichier directement (file://), les navigateurs bloquent souvent les cookies pour des raisons de sécurité.</p>
+                <p style="margin-top: 10px;"><strong>Solution :</strong> Lancez un serveur local (ex: <code>python -m http.server</code>) et accédez via <code>http://localhost:8000</code>.</p>
+            `;
+        }
+    </script>
+</body>
+</html>

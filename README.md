@@ -4,7 +4,7 @@
 
 Plateforme d'entraînement CTF (Capture The Flag) complète avec 8 challenges couvrant 4 catégories différentes.
 
-**🎯 Total : 8 challenges • 4 catégories • 725 points**
+**🎯 Total : 9 challenges • 4 catégories • 875 points**
 
 ---
 
@@ -47,6 +47,7 @@ try-pwn-me/
 ├── challenge6.html         # Buffer Overflow
 ├── challenge7.html         # Format String
 ├── challenge8.html         # SQL Injection
+├── challenge9.html         # Cookie Manipulation
 ├── ctf-files/             # Fichiers téléchargeables pour les challenges
 │   ├── crypto_caesar.zip
 │   ├── crypto_base64.zip
@@ -61,13 +62,14 @@ try-pwn-me/
 
 ## 🎯 Challenges Disponibles
 
-### 🌐 Web (3 challenges - 175 points)
+### 🌐 Web (4 challenges - 225 points)
 
 | # | Nom | Difficulté | Points | Description |
 |---|-----|------------|--------|-------------|
 | 01 | User-Agent | ⭐⭐ Facile | 50 | Modifier les headers HTTP |
 | 02 | Source Code | ⭐ Très Facile | 25 | Trouver un flag caché dans le HTML |
 | 08 | SQL Injection | ⭐⭐⭐ Moyen | 100 | Contourner l'authentification SQL |
+| 09 | Cookie Manipulation | ⭐⭐ Facile | 50 | Modifier les cookies de session |
 
 ### 🔐 Cryptographie (3 challenges - 350 points)
 
@@ -117,6 +119,7 @@ try-pwn-me/
 1. **Challenge 02** - Source Code (Très Facile) - Apprendre à inspecter le code
 2. **Challenge 01** - User-Agent (Facile) - Manipulation HTTP basique
 3. **Challenge 03** - Caesar Cipher (Facile) - Introduction crypto
+4. **Challenge 09** - Cookie Manipulation (Facile) - Comprendre les sessions
 4. **Challenge 04** - Base64 Layers (Moyen) - Encodage multi-couches
 5. **Challenge 08** - SQL Injection (Moyen) - Injection SQL basique
 6. **Challenge 06** - Buffer Overflow (Moyen) - Premier pwn
@@ -154,7 +157,7 @@ Chaque archive contient tous les fichiers nécessaires pour le challenge.
 - ⭐⭐⭐⭐ Difficile : 200 points
 - ⭐⭐⭐⭐⭐ Expert : 500 points (challenges futurs)
 
-**Total actuel : 725 points**
+**Total actuel : 875 points**
 
 ---
 
@@ -166,6 +169,7 @@ Format standard : `TPM{contenu_du_flag}`
 - `TPM{us3r_ag3nt_m4st3r_2024}`
 - `TPM{s0urc3_c0d3_1s_y0ur_fr13nd}`
 - `TPM{buff3r_0v3rfl0w_m4st3r}`
+- `TPM{c00k13s_4r3_d3l1c10us_but_1ns3cur3}`
 
 ⚠️ **Les flags sont sensibles à la casse !**
 
@@ -280,6 +284,7 @@ En complétant ces challenges, vous apprendrez :
 Débutant (0-2 mois)
 ├── Challenge 02 (Source Code)
 ├── Challenge 01 (User-Agent)
+├── Challenge 09 (Cookie Manipulation)
 └── Challenge 03 (Caesar)
 
 Intermédiaire (2-6 mois)
